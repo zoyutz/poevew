@@ -111,6 +111,35 @@ button:active,.upload:active{border-color:#404040 #fff #fff #404040;box-shadow:n
 .item-menu button.menu-close{display:flex!important;flex:0 0 32px!important;width:32px!important;height:32px!important;min-height:32px!important;padding:0!important;margin:0!important;align-items:center!important;justify-content:center!important;text-align:center!important;font-size:19px!important;line-height:1!important;font-weight:bold!important;color:#000!important;background:#c0c0c0!important;border:2px solid!important;border-color:#fff #404040 #404040 #fff!important;border-radius:0!important;box-shadow:1px 1px 0 #000!important;visibility:visible!important;opacity:1!important}
 .item-menu button.menu-close:active{border-color:#404040 #fff #fff #404040!important;box-shadow:none!important}
 
+
+/* Readability pass: larger, heavier text; keep existing component geometry */
+body{font-size:16px;font-weight:600;line-height:1.5}
+body button,body .upload{font-size:15px;font-weight:700}
+.brand{font-size:21px;font-weight:900}
+.sub{font-size:14px;font-weight:700;letter-spacing:1px}
+.hint,.footer{font-size:13px;font-weight:600}
+.status{font-size:14px;font-weight:800}
+.sectitle{font-size:15px;font-weight:900;letter-spacing:1px}
+.attr .num{font-size:32px;font-weight:850}
+.attr .name{font-size:14px;font-weight:900;letter-spacing:1px}
+.stat label{font-size:14px;font-weight:800}
+.stat b{font-size:23px;font-weight:850}
+.slot{font-size:13px;font-weight:800;letter-spacing:.6px}
+.iname{font-size:15px;font-weight:850;line-height:1.35}
+.glyph{font-size:25px}
+.item-actions button{font-size:13px;font-weight:800}
+.item-menu button{font-size:14px;font-weight:700;line-height:1.4}
+.item-menu .menu-title,.item-menu .menu-caption{font-size:13px;font-weight:900}
+.item-menu button small{font-size:13px;font-weight:700}
+.modal-title{font-size:20px;font-weight:900}
+.modal-sub{font-size:14px;font-weight:700}
+.modal-stat{font-size:15px;font-weight:700;line-height:1.5}
+.modal-group{font-size:13px;font-weight:900}
+.modal-close{font-size:15px;font-weight:800}
+.resrow{font-size:15px;font-weight:800}
+.resval{font-weight:900}
+.optimizer-result{font-size:15px;font-weight:700;line-height:1.6}
+
 </style></head><body><div class="wrap"><div class="mobile-switch">Мобильная версия · <a href="./index.html">Открыть обычную версию</a></div>
 <header class="top"><div><div class="brand">EXILE <span style="color:var(--gold)">/</span> CHARACTER</div><div class="sub">PATH OF EXILE · BUILD OVERVIEW <span id="charInfo"> · Ведьма / Некромант · Уровень 91</span></div></div><div class="upload-area"><div class="upload-actions"><label class="upload" for="file">＋ ВЫБРАТЬ ФАЙЛ PoB</label><button type="button" class="clear-btn" id="clearBuild" onclick="return window.clearBuildView()">ОЧИСТИТЬ</button></div><input id="file" type="file" accept=".txt,.xml,.code,text/plain,application/xml"><div id="status" class="status">Исходный билд уже отображён</div><div class="hint">На iPhone открой HTML именно в Safari, не в окне предпросмотра.</div></div></header>
 <section class="section"><div class="sectitle">Атрибуты персонажа</div><div class="attrs">
