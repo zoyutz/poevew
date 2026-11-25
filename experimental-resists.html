@@ -152,7 +152,7 @@ body button,body .upload{font-size:16px;line-height:1.35}
 .gear-head{flex-wrap:wrap}
 .trade-resist-btn{background:#d4d0c8;color:#111;border:2px solid;border-color:#fff #404040 #404040 #fff;box-shadow:1px 1px 0 #000}
 .trade-resist-btn:active{border-color:#404040 #fff #fff #404040;box-shadow:none}
-.trade-edit-line{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;color:var(--muted);font-size:14px}.trade-edit-line input{width:78px;min-width:78px;padding:8px 6px;border:1px solid var(--line);border-radius:5px;background:#10151b;color:var(--text);font:600 16px inherit;text-align:center}.trade-resist-card{margin:9px 0;padding:10px;background:#d4d0c8;color:#111;border:2px solid;border-color:#fff #808080 #808080 #fff}
+.trade-edit-line{display:flex;flex-direction:column;gap:5px;padding:8px 0;color:var(--muted);font-size:14px}.trade-slider-wrap{display:flex;align-items:center;gap:12px}.trade-slider-wrap input[type=range]{flex:1;min-width:0;accent-color:var(--gold);cursor:pointer}.trade-slider-wrap output{min-width:48px;text-align:right;color:var(--text);font-weight:800;font-size:16px;font-variant-numeric:tabular-nums}.trade-resist-card{margin:9px 0;padding:10px;background:#d4d0c8;color:#111;border:2px solid;border-color:#fff #808080 #808080 #fff}
 .trade-resist-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}
 .trade-resist-head>b{font-size:17px;font-weight:900}
 .trade-copy-btn{font-size:14px!important;padding:7px 10px!important;white-space:normal}
@@ -415,7 +415,7 @@ function planTradeResists(){
  window.tradeResistPlan=plan;
  const render=()=>{
   const rows=plan.free.map((slot,i)=>{
-   const fields=plan.defs.map(d=>'<label class="trade-edit-line"><span>'+d.label+'</span><input type="number" min="0" max="'+d.amount+'" step="1" value="'+plan.alloc[d.key][i]+'" data-trade-alloc data-resist-key="'+d.key+'" data-slot-index="'+i+'">%</label>').join('');
+   const fields=plan.defs.map(d=>'<div class="trade-edit-line"><label for="trade-'+d.key+'-'+i+'">'+d.label+'</label><div class="trade-slider-wrap"><input id="trade-'+d.key+'-'+i+'" type="range" min="0" max="'+d.amount+'" step="1" value="'+plan.alloc[d.key][i]+'" data-trade-alloc data-resist-key="'+d.key+'" data-slot-index="'+i+'"><output data-trade-value="'+d.key+'-'+i+'">'+plan.alloc[d.key][i]+'%</output></div></div>').join('');
    const copy='<button type="button" class="trade-copy-btn" data-copy-slot="'+i+'">Копировать для Trade</button>';
    return '<div class="trade-resist-card"><div class="trade-resist-head"><b>'+slotNames[slot]+'</b>'+copy+'</div>'+fields+'</div>';
   }).join('');
@@ -424,7 +424,7 @@ function planTradeResists(){
    return '<div class="trade-deficit"><span>'+d.label+'</span><b>'+sum+'% / '+d.amount+'% нужно</b></div>';
   }).join('');
   content.innerHTML='<div class="modal-group">Дефицит после снятия предметов</div>'+plan.defs.map(d=>'<div class="trade-deficit"><span>'+d.label+'</span><b>'+fmt(totals[d.key])+'% → 75% <small>(не хватает '+d.amount+'%)</small></b></div>').join('')+
-   '<div class="modal-stat primary">Измени любое значение. Остаток этого сопротивления автоматически и поровну распределится между остальными свободными предметами. Сумма по каждому типу останется равна дефициту.</div><div class="modal-group">Требования к предметам</div>'+rows+
+   '<div class="modal-stat primary">Двигай ползунок на любом предмете. Остаток этого сопротивления сразу и поровну распределится между всеми остальными свободными предметами. Общая сумма останется равна дефициту — до капа 75%.</div><div class="modal-group">Требования к предметам</div>'+rows+
    '<div class="modal-group">Контроль распределения</div>'+summary;
  };
  render();
@@ -434,12 +434,13 @@ function planTradeResists(){
   if(!d)return;
   let chosen=Math.max(0,Math.min(d.amount,Math.round(Number(input.value)||0)));
   input.value=chosen;
+  const ownOutput=content.querySelector('[data-trade-value="'+key+'-'+index+'"]');if(ownOutput)ownOutput.textContent=chosen+'%';
   const others=plan.free.map((_,i)=>i).filter(i=>i!==index);
   const remaining=d.amount-chosen;
   plan.alloc[key][index]=chosen;
   const q=others.length?Math.floor(remaining/others.length):0,rem=others.length?remaining%others.length:0;
   others.forEach((i,n)=>plan.alloc[key][i]=q+(n<rem?1:0));
-  content.querySelectorAll('[data-trade-alloc][data-resist-key="'+key+'"]').forEach(el=>{const j=Number(el.dataset.slotIndex);if(j!==index)el.value=plan.alloc[key][j]});
+  content.querySelectorAll('[data-trade-alloc][data-resist-key="'+key+'"]').forEach(el=>{const j=Number(el.dataset.slotIndex);if(j!==index){el.value=plan.alloc[key][j];const out=content.querySelector('[data-trade-value="'+key+'-'+j+'"]');if(out)out.textContent=plan.alloc[key][j]+'%'}});
   const summaryRows=content.querySelectorAll('.trade-deficit');
   plan.defs.forEach((def,j)=>{const row=summaryRows[plan.defs.length+j];if(row){const sum=plan.alloc[def.key].reduce((a,b)=>a+b,0);row.querySelector('b').textContent=sum+'% / '+def.amount+'% нужно'}});
  };
