@@ -320,13 +320,19 @@ async function parseCode(code){
 }
 function itemText(node){return (node?.textContent||'').trim()}
 function itemContribution(txt){
- const c={Life:0,Armour:0,Evasion:0,FireResist:0,ColdResist:0,LightningResist:0,ChaosResist:0};
+ const c={Str:0,Dex:0,Int:0,Life:0,Mana:0,EnergyShield:0,Armour:0,Evasion:0,EffectiveBlockChance:0,EffectiveSpellBlockChance:0,FireResist:0,ColdResist:0,LightningResist:0,ChaosResist:0};
  if(!txt)return c;
  const lines=txt.split(/\r?\n/).map(x=>x.trim());
  for(const line of lines){
-  let m=line.match(/^\+(\d+) to maximum Life\b/i);if(m)c.Life+=Number(m[1]);
-  m=line.match(/^Armour:\s*(\d+)/i);if(m)c.Armour+=Number(m[1]);
-  m=line.match(/^Evasion:\s*(\d+)/i);if(m)c.Evasion+=Number(m[1]);
+  let m=line.match(/^([+-]?\d+(?:\.\d+)?) to (?:all )?Strength\b/i);if(m)c.Str+=Number(m[1]);
+  m=line.match(/^([+-]?\d+(?:\.\d+)?) to (?:all )?Dexterity\b/i);if(m)c.Dex+=Number(m[1]);
+  m=line.match(/^([+-]?\d+(?:\.\d+)?) to (?:all )?Intelligence\b/i);if(m)c.Int+=Number(m[1]);
+  m=line.match(/^([+-]?\d+(?:\.\d+)?) to all Attributes\b/i);if(m){const v=Number(m[1]);c.Str+=v;c.Dex+=v;c.Int+=v}
+  m=line.match(/^([+-]?\d+(?:\.\d+)?) to maximum (Life|Mana|Energy Shield)\b/i);if(m)c[m[2].replace(/\s/g,'')]+=Number(m[1]);
+  m=line.match(/^(Armour|Evasion|Energy Shield):\s*(\d+)/i);if(m)c[m[1].replace(/\s/g,'')]=Number(m[2]);
+  m=line.match(/^([+-]?\d+(?:\.\d+)?) to (Armour|Evasion|Energy Shield)\b/i);if(m)c[m[2].replace(/\s/g,'')]+=Number(m[1]);
+  m=line.match(/^([+-]?\d+(?:\.\d+)?)% chance to Block Attack Damage\b/i);if(m)c.EffectiveBlockChance+=Number(m[1]);
+  m=line.match(/^([+-]?\d+(?:\.\d+)?)% chance to Block Spell Damage\b/i);if(m)c.EffectiveSpellBlockChance+=Number(m[1]);
   m=line.match(/^([+-]?\d+(?:\.\d+)?)%\s+to\s+(.+?)\s+Resistances?\b/i);
   if(m){
    const value=Number(m[1]),target=m[2].toLowerCase();
@@ -344,7 +350,7 @@ function itemContribution(txt){
 }
 function calculateCurrentTotals(){
  const items=window.pobItems||{},slots=window.slotMap||{},base=window.baseStats||{};
- const keys=['Life','Armour','Evasion','FireResist','ColdResist','LightningResist','ChaosResist'];
+ const keys=['Str','Dex','Int','Life','Mana','EnergyShield','Armour','Evasion','EffectiveBlockChance','EffectiveSpellBlockChance','FireResist','ColdResist','LightningResist','ChaosResist'];
  const totals={};keys.forEach(k=>totals[k]=Number(base[k]||0));
  for(const slot of Object.keys(window.baseSlotMap||{})){
   const original=itemContribution(items[window.baseSlotMap[slot]]);
@@ -356,6 +362,7 @@ function calculateCurrentTotals(){
 function refreshCalculatedStats(){
  if(!window.baseStats||!window.baseSlotMap)return;
  const totals=calculateCurrentTotals();
+ ['Str','Dex','Int'].forEach(k=>{const el=document.getElementById(k);if(el)el.textContent=fmt(totals[k])});
  const defs=document.getElementById('defenses');
  if(defs){
   defs.querySelectorAll('.stat').forEach(el=>{
@@ -447,7 +454,7 @@ function render(doc){
  addLibraryItemsToBuild();
  window.slotMap={};doc.querySelectorAll('ItemSet').forEach((set,i)=>{if(i===0)set.querySelectorAll(':scope > Slot').forEach(s=>window.slotMap[s.getAttribute('name')]=s.getAttribute('itemId'))});
  window.baseSlotMap={...window.slotMap};
- window.baseStats={};['Life','Armour','Evasion','FireResist','ColdResist','LightningResist','ChaosResist','Mana','EnergyShield','EffectiveBlockChance','EffectiveSpellBlockChance'].forEach(k=>window.baseStats[k]=Number(stats[k]||0));
+ window.baseStats={};['Str','Dex','Int','Life','Armour','Evasion','FireResist','ColdResist','LightningResist','ChaosResist','Mana','EnergyShield','EffectiveBlockChance','EffectiveSpellBlockChance'].forEach(k=>window.baseStats[k]=Number(stats[k]||0));
  document.getElementById('defenses').innerHTML=Object.entries(statNames).map(([k,n])=>`<div class="stat"><label>${n}</label><b>${fmt(stats[k])}${k.includes('Chance')?'%':''}</b></div>`).join('');
  window.renderGear();refreshCalculatedStats();
 }
