@@ -344,6 +344,7 @@ document.getElementById('gear').addEventListener('click',e=>{
  }
  const remove=e.target.closest('[data-delete-item-id]');
  if(remove){
+  e.preventDefault();e.stopPropagation();
   const id=remove.dataset.deleteItemId;
   window.itemLibrary=(window.itemLibrary||window.loadItemLibrary()).filter(x=>x.id!==id);
   window.importedItems=window.itemLibrary.map(x=>x.id);
@@ -351,6 +352,8 @@ document.getElementById('gear').addEventListener('click',e=>{
   Object.keys(window.slotMap||{}).forEach(k=>{if(window.slotMap[k]===id)window.slotMap[k]=''});
   window.saveItemLibrary();
   window.renderGear();refreshCalculatedStats();
+  const updatedCard=document.querySelector('.item[data-slot="'+slot+'"]');
+  if(updatedCard){const load=updatedCard.querySelector('.load-item');if(load)load.click()}
   return;
  }
  const choice=e.target.closest('.item-menu button[data-item-id]');if(choice){window.slotMap[slot]=choice.dataset.itemId||'';window.renderGear();refreshCalculatedStats()}
