@@ -327,10 +327,21 @@ document.getElementById('gear').addEventListener('click',e=>{
   const current=currentId&&gearSlotMatches(slot,currentTxt)?'<button type="button" class="equipped-choice" data-item-id="'+esc(currentId)+'"><b>Сейчас надето</b><small>'+esc(nameOf(currentTxt))+'</small></button>':'';
   const candidates=Object.entries(window.pobItems||{}).filter(([id,txt])=>id!==currentId&&gearSlotMatches(slot,txt));
   const imported=new Set(window.importedItems||[]);
-  const options=candidates.map(([id,txt])=>'<button type="button" data-item-id="'+esc(id)+'"><b>'+esc(nameOf(txt))+'</b><small>'+(imported.has(id)?'Добавленный предмет':'Предмет из PoB')+'</small></button>').join('');
+  const options=candidates.map(([id,txt])=>imported.has(id)?'<div class="library-item-option" style="display:flex;align-items:stretch;gap:4px"><button type="button" data-item-id="'+esc(id)+'" style="flex:1;text-align:left"><b>'+esc(nameOf(txt))+'</b><small>Сохранённый предмет</small></button><button type="button" data-delete-item-id="'+esc(id)+'" aria-label="Удалить '+esc(nameOf(txt))+'" title="Удалить из библиотеки" style="flex:0 0 38px;padding:4px;color:#e58b8b;font-size:22px">×</button></div>':'<button type="button" data-item-id="'+esc(id)+'"><b>'+esc(nameOf(txt))+'</b><small>Предмет из PoB</small></button>').join('');
   menu.innerHTML='<div class="menu-title">'+esc(slotNames[slot])+'</div><button type="button" class="empty-choice" data-item-id=""><b>Пусто</b><small>Оставить слот свободным</small></button>'+current+(options?'<div class="menu-caption">Другие предметы этого типа</div>'+options:'')+'<button type="button" class="add-text-item" data-add-text-item="1">＋ Вставить из буфера обмена</button>';menu.classList.add('open');return;
  }
- const choice=e.target.closest('.item-menu button');if(choice){window.slotMap[slot]=choice.dataset.itemId||'';window.renderGear();refreshCalculatedStats()}
+ const remove=e.target.closest('[data-delete-item-id]');
+ if(remove){
+  const id=remove.dataset.deleteItemId;
+  window.itemLibrary=(window.itemLibrary||window.loadItemLibrary()).filter(x=>x.id!==id);
+  window.importedItems=window.itemLibrary.map(x=>x.id);
+  delete window.pobItems[id];
+  Object.keys(window.slotMap||{}).forEach(k=>{if(window.slotMap[k]===id)window.slotMap[k]=''});
+  window.saveItemLibrary();
+  window.renderGear();refreshCalculatedStats();
+  return;
+ }
+ const choice=e.target.closest('.item-menu button[data-item-id]');if(choice){window.slotMap[slot]=choice.dataset.itemId||'';window.renderGear();refreshCalculatedStats()}
 });
 document.addEventListener('click',e=>{if(!e.target.closest('.item'))document.querySelectorAll('.item-menu.open').forEach(x=>x.classList.remove('open'))});
 
