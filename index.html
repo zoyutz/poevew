@@ -345,8 +345,9 @@ document.getElementById('modalItemContent').addEventListener('click',e=>{
  const txt=(document.getElementById('itemTextInput')?.value||'').replace(/\r/g,'').trim();
  if(!txt){alert('Вставь текст предмета.');return}
  const lines=txt.split(/\n/).map(x=>x.trim()).filter(Boolean);
- if(!/^Rarity:\s*(Normal|Magic|Rare|Unique|обычный|магический|редкий|уникальный)/i.test(lines[0])||lines.length<3){
-  alert('Не удалось распознать формат. Скопируй предмет целиком из игры, начиная со строки Rarity.');return;
+ const hasRarity=/^Rarity:\s*(Normal|Magic|Rare|Unique|обычный|магический|редкий|уникальный)/i.test(lines[0]);
+ if(lines.length<(hasRarity?3:3)||(!hasRarity&&(!lines[0]||!lines[1]))){
+  alert('Не удалось распознать предмет. Нужны название, базовый тип и характеристики.');return;
  }
  if(!gearSlotMatches(slot,txt)){
   alert('Этот предмет не подходит для слота «'+slotNames[slot]+'». Проверь базовый тип предмета.');return;
@@ -359,7 +360,7 @@ document.getElementById('modalItemContent').addEventListener('click',e=>{
  document.getElementById('itemModal').classList.remove('open');
  window.pendingTextSlot=null;
  const status=document.getElementById('status');
- const itemName=lines[1]||lines[2]||'Предмет';
+ const itemName=lines[hasRarity?1:0]||lines[hasRarity?2:1]||'Предмет';
  status.textContent='Добавлен в инвентарь: '+itemName+' · '+slotNames[slot]+'. Предмет не надет.';
  const card=document.querySelector('.item[data-slot="'+slot+'"]');
  if(card){const load=card.querySelector('.load-item');if(load)load.click()}
