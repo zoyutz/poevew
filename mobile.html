@@ -199,6 +199,18 @@ body button,body .upload{font-size:16px;line-height:1.35}
  #resists .resval{font-size:20px}
 }
 
+/* Trade resistance planner */
+.gear-head{flex-wrap:wrap}
+.trade-resist-btn{background:#d4d0c8;color:#111;border:2px solid;border-color:#fff #404040 #404040 #fff;box-shadow:1px 1px 0 #000}
+.trade-resist-btn:active{border-color:#404040 #fff #fff #404040;box-shadow:none}
+.trade-resist-card{margin:9px 0;padding:10px;background:#d4d0c8;color:#111;border:2px solid;border-color:#fff #808080 #808080 #fff}
+.trade-resist-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}
+.trade-resist-head>b{font-size:17px;font-weight:900}
+.trade-copy-btn{font-size:14px!important;padding:7px 10px!important;white-space:normal}
+.trade-resist-line,.trade-deficit{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:5px 2px;border-top:1px solid #aaa;font-size:16px;font-weight:700}
+.trade-resist-line b,.trade-deficit b{font-size:17px;font-weight:900;white-space:nowrap}
+.trade-deficit small{font-size:13px;font-weight:700}
+@media(max-width:650px){.gear-head{gap:8px}.gear-head .sectitle{flex:1 1 100%}.trade-resist-btn,.gear-head .optimize-btn{flex:1 1 45%;padding:9px 8px;font-size:13px}.trade-resist-head{align-items:flex-start;flex-direction:column}.trade-copy-btn{width:100%}.trade-resist-line,.trade-deficit{font-size:15px}.trade-resist-line b,.trade-deficit b{font-size:16px}}
 </style></head><body><div class="wrap"><div class="mobile-switch">Мобильная версия · <a href="./index.html">Открыть обычную версию</a></div>
 <header class="top"><div><div class="brand">EXILE <span style="color:var(--gold)">/</span> CHARACTER</div><div class="sub">PATH OF EXILE · BUILD OVERVIEW <span id="charInfo"> · Ведьма / Некромант · Уровень 91</span></div></div><div class="upload-area"><div class="upload-actions"><label class="upload" for="file">＋ ВЫБРАТЬ ФАЙЛ PoB</label><button type="button" class="clear-btn" id="clearBuild" onclick="return window.clearBuildView()">ОЧИСТИТЬ</button></div><input id="file" type="file" accept=".txt,.xml,.code,text/plain,application/xml"><div id="status" class="status">Исходный билд уже отображён</div><div class="hint">На iPhone открой HTML именно в Safari, не в окне предпросмотра.</div></div></header>
 <section class="section"><div class="sectitle">Атрибуты персонажа</div><div class="attrs">
@@ -206,7 +218,7 @@ body button,body .upload{font-size:16px;line-height:1.35}
 <div class="attr"><div class="num dex" id="Dex">143</div><div class="name dex">ЛОВКОСТЬ</div></div>
 <div class="attr"><div class="num int" id="Int">267</div><div class="name int">ИНТЕЛЛЕКТ</div></div></div></section>
 <section class="section"><div class="sectitle">Защитные характеристики</div><div class="stats" id="defenses"><div class="stat"><label>Здоровье</label><b>5 224</b></div><div class="stat"><label>Мана</label><b>924</b></div><div class="stat"><label>Энергетический щит</label><b>698</b></div><div class="stat"><label>Броня</label><b>2 195</b></div><div class="stat"><label>Уклонение</label><b>2 781</b></div><div class="stat"><label>Шанс блока атак</label><b>65%</b></div><div class="stat"><label>Шанс блока чар</label><b>54%</b></div></div></section>
-<section class="section"><div class="gear-head"><div class="sectitle">Экипировка · защитные параметры предметов</div><button type="button" class="optimize-btn" id="optimizeGear">✦ ПОДБОР</button></div><div id="optimizerResult" class="optimizer-result"></div><div class="gear" id="gear"><div class="item" tabindex="0"><div class="glyph">♜</div><div class="slot">Шлем</div><div class="iname rarity-rare">Fate Visage</div><div class="tooltip">Rarity: RARE
+<section class="section"><div class="gear-head"><div class="sectitle">Экипировка · защитные параметры предметов</div><button type="button" class="optimize-btn" id="optimizeGear">✦ ПОДБОР</button><button type="button" class="optimize-btn trade-resist-btn" id="tradeResistPlanner">⌕ РЕЗИСТЫ НА TRADE</button></div><div id="optimizerResult" class="optimizer-result"></div><div class="gear" id="gear"><div class="item" tabindex="0"><div class="glyph">♜</div><div class="slot">Шлем</div><div class="iname rarity-rare">Fate Visage</div><div class="tooltip">Rarity: RARE
 Fate Visage
 Sinner Tricorne
 Evasion: 653
@@ -434,6 +446,32 @@ function refreshCalculatedStats(){
  const res=document.getElementById('resists');
  if(res)res.innerHTML=rs.map(([k,n,c])=>{const v=totals[k];return '<div class="resrow"><b>'+n+'</b><div class="bar"><div class="fill '+c+'" style="width:'+Math.max(0,Math.min(100,v))+'%"></div></div><div class="resval">'+fmt(v)+'%</div></div>'}).join('');
 }
+function planTradeResists(){
+ if(!window.baseStats||!window.baseSlotMap){alert('Сначала загрузи PoB-билд.');return}
+ const order=['Helmet','Amulet','Body Armour','Gloves','Boots','Weapon 1','Weapon 2','Ring 1','Ring 2','Belt'];
+ const free=order.filter(slot=>!!window.baseSlotMap[slot]&&!window.slotMap?.[slot]);
+ const totals=calculateCurrentTotals();
+ const deficits=[
+  {key:'FireResist',label:'Огонь',trade:'Fire',amount:Math.max(0,Math.ceil(75-totals.FireResist))},
+  {key:'ColdResist',label:'Холод',trade:'Cold',amount:Math.max(0,Math.ceil(75-totals.ColdResist))},
+  {key:'LightningResist',label:'Молния',trade:'Lightning',amount:Math.max(0,Math.ceil(75-totals.LightningResist))}
+ ];
+ const modal=document.getElementById('itemModal'),title=document.getElementById('modalItemName'),subtitle=document.getElementById('modalItemBase'),content=document.getElementById('modalItemContent');
+ title.textContent='Подбор сопротивлений для Trade';
+ subtitle.textContent='Распределение дефицита между снятыми предметами · цель: 75% стихийных сопротивлений';
+ if(!free.length){content.innerHTML='<div class="modal-stat primary">Сначала сними предметы, для которых нужно подобрать замену. Учитываются только слоты, в которых изначально был надет предмет.</div>';modal.classList.add('open');return}
+ if(deficits.every(x=>x.amount===0)){content.innerHTML='<div class="modal-stat primary">Стихийные сопротивления уже закрыты: огонь '+fmt(totals.FireResist)+'%, холод '+fmt(totals.ColdResist)+'%, молния '+fmt(totals.LightningResist)+'%.</div><div class="modal-stat">Хаос: '+fmt(totals.ChaosResist)+'%. Распределять обязательные резисты не требуется.</div>';modal.classList.add('open');return}
+ const split=(amount,count,index)=>Math.floor(amount/count)+(index<amount%count?1:0);
+ const rows=free.map((slot,i)=>{
+  const requirements=deficits.map(d=>({...d,value:split(d.amount,free.length,i)})).filter(d=>d.value>0);
+  const tradeText=requirements.map(d=>'+ '+d.value+'% to '+d.trade+' Resistance').join('\n');
+  const labels=requirements.length?requirements.map(d=>'<div class="trade-resist-line"><span>'+d.label+'</span><b>+'+d.value+'%</b></div>').join(''):'<div class="trade-resist-line"><span>Дополнительные резисты не требуются</span></div>';
+  return '<div class="trade-resist-card"><div class="trade-resist-head"><b>'+slotNames[slot]+'</b><button type="button" class="trade-copy-btn" data-copy-trade="'+encodeURIComponent(tradeText)+'">Копировать для Trade</button></div>'+labels+'</div>';
+ }).join('');
+ const summary=deficits.map(d=>'<div class="trade-deficit"><span>'+d.label+'</span><b>'+fmt(totals[d.key])+'% → 75% <small>(не хватает '+d.amount+')</small></b></div>').join('');
+ content.innerHTML='<div class="modal-group">Текущие сопротивления после снятия предметов</div>'+summary+'<div class="modal-stat primary">Дефицит разделён между '+free.length+' свободными слотами. Разница между предметами — не более 1% для каждого типа сопротивления.</div><div class="modal-group">Требования к каждому предмету</div>'+rows+'<div class="modal-stat">Хаос сейчас: '+fmt(totals.ChaosResist)+'%. Он показан отдельно и не включён в обязательное распределение.</div>';
+ modal.classList.add('open');
+}
 function optimizeGearForResists(){
  if(!window.baseStats||!window.baseSlotMap){alert('Сначала загрузи PoB-билд.');return}
  const slots=['Helmet','Amulet','Body Armour','Gloves','Boots','Weapon 1','Weapon 2','Ring 1','Ring 2','Belt'];
@@ -577,6 +615,7 @@ function openItemDescription(slot){
  document.getElementById('itemModal').classList.add('open');
 }
 document.getElementById('optimizeGear').addEventListener('click',optimizeGearForResists);
+document.getElementById('tradeResistPlanner').addEventListener('click',planTradeResists);
 document.getElementById('closeItemModal').addEventListener('click',()=>document.getElementById('itemModal').classList.remove('open'));
 document.getElementById('itemModal').addEventListener('click',e=>{if(e.target.id==='itemModal')e.currentTarget.classList.remove('open')});
 document.getElementById('gear').addEventListener('click',e=>{
@@ -639,6 +678,8 @@ async function pasteItemFromClipboard(){
  }
 }
 document.getElementById('modalItemContent').addEventListener('click',e=>{
+ if(e.target.closest('.trade-copy-btn')){const btn=e.target.closest('.trade-copy-btn');const value=decodeURIComponent(btn.dataset.copyTrade||'');if(!value){btn.textContent='Нет требований';return}navigator.clipboard?.writeText(value).then(()=>{btn.textContent='Скопировано'}).catch(()=>{btn.textContent='Не удалось скопировать'});return}
+
  if(e.target.id==='readClipboard'){pasteItemFromClipboard();return}
  if(e.target.id==='cancelTextImport'){document.getElementById('itemModal').classList.remove('open');return}
  if(e.target.id!=='saveTextImport')return;
