@@ -210,18 +210,18 @@ window.renderGear=function(){
  const items=window.pobItems||{},slots=window.slotMap||{};
  const order=['Helmet','Amulet','Body Armour','Gloves','Boots','Weapon 1','Weapon 2','Ring 1','Ring 2','Belt'];
  document.getElementById('gear').innerHTML=order.map(k=>{
-  const id=slots[k],txt=items[id],lines=txt?txt.split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean):[];
-  const name=txt?(lines.find(x=>/^Rarity:/.test(x))?.replace(/^Rarity:\\s*\\w+\\s*/,'')||lines[1]||'Предмет'):'Пусто';
-  const rarity=(txt?.match(/Rarity:\\s*(\\w+)/)?.[1]||'normal').toLowerCase();
+  const id=slots[k],txt=items[id],lines=txt?txt.split(/\r?\n/).map(x=>x.trim()).filter(Boolean):[];
+  const name=txt?(lines.find(x=>/^Rarity:/.test(x))?.replace(/^Rarity:\s*\w+\s*/,'')||lines[1]||'Предмет'):'Пусто';
+  const rarity=(txt?.match(/Rarity:\s*(\w+)/)?.[1]||'normal').toLowerCase();
   const safe=name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return `<div class="item" data-slot="${k}"><div class="glyph">${icons[k]||'◇'}</div><div class="slot">${slotNames[k]}</div><div class="iname rarity-${rarity}">${safe}</div><div class="item-actions"><button type="button" class="show-item">Описание</button><button type="button" class="load-item">Загрузить</button></div><div class="item-menu"></div></div>`;
  }).join('');
 };
 function openItemDescription(slot){
  const id=window.slotMap?.[slot],txt=window.pobItems?.[id];if(!txt)return;
- const lines=txt.split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean);
- const rarity=lines.find(x=>/^Rarity:/.test(x))?.replace(/^Rarity:\\s*/,'')||'Предмет';
- const title=lines.find(x=>/^Rarity:/.test(x))?.replace(/^Rarity:\\s*\\w+\\s*/,'')||lines[1]||'Предмет';
+ const lines=txt.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+ const rarity=lines.find(x=>/^Rarity:/.test(x))?.replace(/^Rarity:\s*/,'')||'Предмет';
+ const title=lines.find(x=>/^Rarity:/.test(x))?.replace(/^Rarity:\s*\w+\s*/,'')||lines[1]||'Предмет';
  const base=lines[2]||'';
  const ignore=/^(?:Rarity:|Unique ID:|Item Level:|LevelReq:|Quality:|Sockets:|Implicits:|ArmourBasePercentile:|EvasionBasePercentile:|EnergyShieldBasePercentile:|Searing Exarch Item|Eater of Worlds Item|Corrupted$)/i;
  const mods=lines.filter((x,i)=>i>2&&!ignore.test(x));
@@ -241,7 +241,7 @@ document.getElementById('gear').addEventListener('click',e=>{
  if(e.target.closest('.load-item')){
   const menu=card.querySelector('.item-menu');document.querySelectorAll('.item-menu.open').forEach(x=>{if(x!==menu)x.classList.remove('open')});
   if(menu.classList.contains('open')){menu.classList.remove('open');return}
-  const opts=Object.entries(window.pobItems||{}).map(([id,txt])=>{const l=txt.split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean);const nm=l.find(x=>/^Rarity:/.test(x))?.replace(/^Rarity:\\s*\\w+\\s*/,'')||l[1]||'Предмет';return '<button type="button" data-item-id="'+id+'">'+nm.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</button>'}).join('');
+  const opts=Object.entries(window.pobItems||{}).map(([id,txt])=>{const l=txt.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);const nm=l.find(x=>/^Rarity:/.test(x))?.replace(/^Rarity:\s*\w+\s*/,'')||l[1]||'Предмет';return '<button type="button" data-item-id="'+id+'">'+nm.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</button>'}).join('');
   menu.innerHTML='<button type="button" class="empty-choice" data-item-id="">Пусто — оставить слот свободным</button>'+opts;menu.classList.add('open');return;
  }
  const choice=e.target.closest('.item-menu button');if(choice){window.slotMap[slot]=choice.dataset.itemId||'';window.renderGear()}
