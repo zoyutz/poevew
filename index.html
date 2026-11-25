@@ -5,7 +5,7 @@
 :root{--bg:#101318;--panel:#191e25;--panel2:#222a33;--line:#343d48;--text:#e7e9ec;--muted:#9aa5b1;--gold:#c9a66b;--red:#d66d5d;--blue:#69aee0;--green:#75c58c;--purple:#b18bd5}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#29313b 0,#101318 55%);color:var(--text);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif;padding:22px}
 .wrap{max-width:1050px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:18px}.brand{font-weight:800;letter-spacing:2px;font-size:18px}.sub{color:var(--muted);font-size:11px;letter-spacing:1.5px;margin-top:3px}
-button,.upload{border:1px solid #756044;background:linear-gradient(#3b3328,#29251f);color:#f1d9b2;padding:10px 15px;border-radius:7px;cursor:pointer;font-weight:650}.upload-area{display:flex;flex-direction:column;align-items:flex-end;gap:7px}.upload-actions{display:flex;gap:8px;align-items:center}.clear-btn{border-color:#59616b;background:linear-gradient(#343b44,#252b33);color:#d9dee4}.upload-area input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;z-index:-1}.hint{font-size:10px;color:#8995a1;max-width:230px;text-align:right}.status{color:var(--green);font-size:12px;margin-left:10px}
+button,.upload{border:1px solid #756044;background:linear-gradient(#3b3328,#29251f);color:#f1d9b2;padding:10px 15px;border-radius:7px;cursor:pointer;font-weight:650}.upload-area{display:flex;flex-direction:column;align-items:flex-end;gap:7px}.upload-actions{display:flex;gap:8px;align-items:center}.clear-btn{border-color:#59616b;background:linear-gradient(#343b44,#252b33);color:#d9dee4}.upload-area input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;z-index:-1}#imageFile{position:fixed;left:0;bottom:0;width:2px;height:2px;opacity:.01;z-index:1}.hint{font-size:10px;color:#8995a1;max-width:230px;text-align:right}.status{color:var(--green);font-size:12px;margin-left:10px}
 .section{background:linear-gradient(145deg,#1b2129,#151a20);border:1px solid var(--line);border-radius:12px;padding:16px;margin:13px 0;box-shadow:0 8px 24px #0003}.sectitle{font-size:12px;color:var(--gold);letter-spacing:1.6px;font-weight:800;text-transform:uppercase;margin-bottom:13px}
 .attrs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.attr{background:linear-gradient(145deg,#2a3038,#20262e);border:1px solid #3b434d;border-radius:10px;text-align:center;padding:14px}.attr .num{font-size:30px;font-weight:750;font-variant-numeric:tabular-nums}.attr .name{font-size:11px;letter-spacing:1.8px;font-weight:800}.str{color:#e5b45e}.dex{color:#76c995}.int{color:#77b5e7}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.stat{background:#222932;border:1px solid #333d48;border-radius:8px;padding:11px}.stat label{display:block;color:var(--muted);font-size:11px}.stat b{font-size:21px;font-variant-numeric:tabular-nums}
@@ -18,8 +18,8 @@ button,.upload{border:1px solid #756044;background:linear-gradient(#3b3328,#2925
 .resrow{display:grid;grid-template-columns:75px 1fr 45px;gap:12px;align-items:center;margin:11px 0}.bar{height:10px;background:#303943;border-radius:20px;overflow:hidden}.fill{height:100%;border-radius:20px}.fire{background:#d56b56}.cold{background:#67aee1}.light{background:#d8c05e}.chaos{background:#ad7bd0}.resval{text-align:right;font-weight:750;font-variant-numeric:tabular-nums}
 .footer{color:#74808d;font-size:11px;text-align:center;padding:12px}
 @media(max-width:850px){.gear{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:650px){.gear{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.item{min-height:118px;padding:10px 8px}.upload-area{align-items:flex-start}.upload-actions{flex-wrap:wrap}.hint{text-align:left}body{padding:12px}.stats{grid-template-columns:repeat(2,1fr)}.gear{grid-template-columns:repeat(2,1fr)}.top{align-items:flex-start;flex-direction:column}.attr .num{font-size:25px}.section{padding:12px}}
-</style></head><body><div class="wrap">
-<header class="top"><div><div class="brand">EXILE <span style="color:var(--gold)">/</span> CHARACTER</div><div class="sub">PATH OF EXILE · BUILD OVERVIEW <span id="charInfo"> · Ведьма / Некромант · Уровень 91</span></div></div><div class="upload-area"><div class="upload-actions"><label class="upload" for="file">＋ ВЫБРАТЬ ФАЙЛ PoB</label><button type="button" class="clear-btn" id="clearBuild" onclick="return window.clearBuildView()">ОЧИСТИТЬ</button></div><input id="file" type="file" accept=".txt,.xml,.code,text/plain,application/xml"><div id="status" class="status">Исходный билд уже отображён</div><div class="hint">На iPhone открой HTML именно в Safari, не в окне предпросмотра.</div></div></header>
+</style><script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script></head><body><div class="wrap">
+<header class="top"><div><div class="brand">EXILE <span style="color:var(--gold)">/</span> CHARACTER</div><div class="sub">PATH OF EXILE · BUILD OVERVIEW <span id="charInfo"> · Ведьма / Некромант · Уровень 91</span></div></div><div class="upload-area"><div class="upload-actions"><label class="upload" for="file">＋ ВЫБРАТЬ ФАЙЛ PoB</label><button type="button" class="clear-btn" id="clearBuild" onclick="return window.clearBuildView()">ОЧИСТИТЬ</button></div><input id="file" type="file" accept=".txt,.xml,.code,text/plain,application/xml"><input id="imageFile" type="file" accept="image/*" aria-label="Выбрать скриншот предмета"><div id="status" class="status">Исходный билд уже отображён</div><div class="hint">На iPhone открой HTML именно в Safari, не в окне предпросмотра.</div></div></header>
 <section class="section"><div class="sectitle">Атрибуты персонажа</div><div class="attrs">
 <div class="attr"><div class="num str" id="Str">230</div><div class="name str">СИЛА</div></div>
 <div class="attr"><div class="num dex" id="Dex">143</div><div class="name dex">ЛОВКОСТЬ</div></div>
@@ -316,6 +316,31 @@ document.getElementById('gear').addEventListener('click',e=>{
 });
 document.addEventListener('click',e=>{if(!e.target.closest('.item'))document.querySelectorAll('.item-menu.open').forEach(x=>x.classList.remove('open'))});
 
+const imagePicker=document.getElementById('imageFile');
+imagePicker.addEventListener('change',async e=>{
+ const file=e.target.files&&e.target.files[0];if(!file)return;
+ const status=document.getElementById('status');status.textContent='Распознаю скриншот предмета…';
+ try{
+  if(!window.Tesseract)throw new Error('Не загрузился модуль распознавания. Проверь подключение к интернету.');
+  const result=await window.Tesseract.recognize(file,'eng',{logger:m=>{if(m.status==='recognizing text')status.textContent='Распознавание: '+Math.round((m.progress||0)*100)+'%'}});
+  const lines=(result.data.text||'').split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean);
+  const rarityLine=lines.find(x=>/^rarity:/i.test(x))||'';
+  const rarity=/unique/i.test(rarityLine)?'UNIQUE':/magic/i.test(rarityLine)?'MAGIC':/normal/i.test(rarityLine)?'NORMAL':'RARE';
+  const clean=lines.filter(x=>!/^rarity:|^item level:|^level req:|^quality:|^sockets:|^corrupted|^requires:/i.test(x));
+  if(clean.length<2)throw new Error('Не удалось распознать название и базовый тип. Нужен скриншот всей подсказки предмета.');
+  const name=clean[0].replace(/[^A-Za-z0-9' -]/g,'').trim()||'Screenshot item';
+  const id='screen_'+Date.now();
+  const txt=['Rarity: '+rarity,name,clean[1],...clean.slice(2)].join('\\n');
+  const slot=window.pendingScreenshotSlot||Object.keys(slotNames).find(k=>gearSlotMatches(k,txt));
+  if(!slot||!gearSlotMatches(slot,txt))throw new Error('Не удалось определить тип предмета по строке: '+clean[1]);
+  window.pobItems=window.pobItems||{};window.pobItems[id]=txt;
+  window.importedItems=window.importedItems||[];window.importedItems.push(id);
+  status.textContent='Добавлен предмет «'+name+'» в список '+slotNames[slot]+'. Нажми «Загрузить» и выбери его.';
+  window.pendingScreenshotSlot=null;imagePicker.value='';
+  const card=document.querySelector('.item[data-slot="'+slot+'"]');
+  if(card){const menu=card.querySelector('.item-menu');if(menu)menu.classList.remove('open');}
+ }catch(err){status.textContent='Ошибка: '+err.message;alert(err.message);window.pendingScreenshotSlot=null;imagePicker.value=''}
+});
 const picker=document.getElementById('file');
 
 
