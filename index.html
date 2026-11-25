@@ -205,7 +205,7 @@ function render(doc){
  document.getElementById('gear').innerHTML=order.map(k=>{
   let id=slots[k],txt=items[id],name='Пусто',rarity='normal';
   if(txt){let lines=txt.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);name=lines.find(x=>/^Rarity:/.test(x))?.replace(/^Rarity:\s*\w+\s*/,'')||lines[1]||'Предмет';let r=txt.match(/Rarity:\s*(\w+)/);rarity=(r?.[1]||'normal').toLowerCase()}
-  const defensive=txt?txt.split(/\\r?\\n/).map(x=>x.trim()).filter(x=>/^(?:Armour|Evasion|Energy Shield):/i.test(x)||/(?:maximum Life|to Fire Resistance|to Cold Resistance|to Lightning Resistance|to Chaos Resistance|increased Armour|increased Evasion|increased Energy Shield|% to (?:Fire|Cold|Lightning|Chaos) Resistance)/i.test(x)):[];
+  const defensive=txt?txt.split(/\r?\n/).map(x=>x.trim()).filter(x=>/^(?:Armour|Evasion|Energy Shield):/i.test(x)||/(?:maximum Life|to Fire Resistance|to Cold Resistance|to Lightning Resistance|to Chaos Resistance|increased Armour|increased Evasion|increased Energy Shield|% to (?:Fire|Cold|Lightning|Chaos) Resistance)/i.test(x)):[];
   const details=defensive.length?defensive.map(x=>'<span>'+x.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span>').join(''):'<span class="empty">Нет выбранных защитных модификаторов</span>';
   return `<div class="item"><div class="glyph">${icons[k]||'◇'}</div><div class="slot">${slotNames[k]}</div><div class="iname rarity-${rarity}">${name}</div><div class="itemstats">${details}</div></div>`
  }).join('');
