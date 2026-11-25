@@ -640,7 +640,7 @@ function openTextImport(slot){
  document.getElementById('modalItemBase').textContent='Скопируй предмет в Path of Exile, затем вставь сюда · '+slotNames[slot];
  document.getElementById('modalItemContent').innerHTML='<div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:10px"><button type="button" id="readClipboard">Вставить из буфера обмена</button></div><div class="modal-group">Текст предмета</div><textarea id="itemTextInput" rows="12" placeholder="Скопируй предмет в игре и нажми «Вставить из буфера обмена» или вставь текст сюда вручную…" style="width:100%;resize:vertical;background:#111820;color:#e7e9ec;border:1px solid #536170;border-radius:8px;padding:12px;font:16px/1.5 ui-monospace,monospace;max-width:100%;box-sizing:border-box"></textarea><div id="clipboardStatus" style="font-size:11px;color:#9aa5b1;margin-top:6px">Буфер обмена будет прочитан после нажатия кнопки</div><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><button type="button" class="clear-btn" id="cancelTextImport">Отмена</button><button type="button" id="saveTextImport">Добавить предмет</button></div>';
  document.getElementById('itemModal').classList.add('open');
- document.getElementById('itemTextInput').focus();
+ // Не переводим фокус в маленькое поле автоматически: Safari на iPhone может менять масштаб страницы.
 }
 async function pasteItemFromClipboard(){
  const status=document.getElementById('clipboardStatus');
