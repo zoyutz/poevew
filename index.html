@@ -319,27 +319,33 @@ document.addEventListener('click',e=>{if(!e.target.closest('.item'))document.que
 const imagePicker=document.getElementById('imageFile');
 imagePicker.addEventListener('change',async e=>{
  const file=e.target.files&&e.target.files[0];if(!file)return;
- const status=document.getElementById('status');status.textContent='Распознаю скриншот предмета…';
+ const status=document.getElementById('status');
+ status.textContent='Отправляю скриншот на распознавание OpenAI…';
  try{
-  if(!window.Tesseract)throw new Error('Не загрузился модуль распознавания. Проверь подключение к интернету.');
-  const result=await window.Tesseract.recognize(file,'eng',{logger:m=>{if(m.status==='recognizing text')status.textContent='Распознавание: '+Math.round((m.progress||0)*100)+'%'}});
-  const lines=(result.data.text||'').split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean);
-  const rarityLine=lines.find(x=>/^rarity:/i.test(x))||'';
-  const rarity=/unique/i.test(rarityLine)?'UNIQUE':/magic/i.test(rarityLine)?'MAGIC':/normal/i.test(rarityLine)?'NORMAL':'RARE';
-  const clean=lines.filter(x=>!/^rarity:|^item level:|^level req:|^quality:|^sockets:|^corrupted|^requires:/i.test(x));
-  if(clean.length<2)throw new Error('Не удалось распознать название и базовый тип. Нужен скриншот всей подсказки предмета.');
-  const name=clean[0].replace(/[^A-Za-z0-9' -]/g,'').trim()||'Screenshot item';
-  const id='screen_'+Date.now();
-  const txt=['Rarity: '+rarity,name,clean[1],...clean.slice(2)].join('\\n');
+  if(!/^image\\/(png|jpeg|webp)$/.test(file.type))throw new Error('Выбери скриншот в формате PNG, JPG или WebP.');
+  if(file.size>8*1024*1024)throw new Error('Файл больше 8 МБ. Выбери скриншот поменьше.');
+  const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(new Error('Не удалось прочитать изображение'));reader.readAsDataURL(file)});
+  const response=await fetch('https://poe-item-vision-api.onrender.com/api/recognize-item',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:dataUrl})});
+  const payload=await response.json();
+  if(!response.ok)throw new Error(payload.error||'Ошибка распознавания');
+  const item=payload.item||{};
+  if(!item.name||!item.baseType)throw new Error('Модель не смогла определить название и базовый тип.');
+  const rarity=['UNIQUE','RARE','MAGIC','NORMAL'].includes(item.rarity)?item.rarity:'RARE';
+  const mods=Array.isArray(item.mods)?item.mods.filter(Boolean):[];
+  const lines=['Rarity: '+rarity,item.name,item.baseType];
+  if(Number.isFinite(item.requiredLevel))lines.push('Requires Level: '+item.requiredLevel);
+  lines.push(...mods);
+  const txt=lines.join('\\n');
   const slot=window.pendingScreenshotSlot||Object.keys(slotNames).find(k=>gearSlotMatches(k,txt));
-  if(!slot||!gearSlotMatches(slot,txt))throw new Error('Не удалось определить тип предмета по строке: '+clean[1]);
+  if(!slot||!gearSlotMatches(slot,txt))throw new Error('Распознан «'+item.name+'» ('+item.baseType+'), но тип не подходит для выбранного слота.');
+  const id='vision_'+Date.now();
   window.pobItems=window.pobItems||{};window.pobItems[id]=txt;
   window.importedItems=window.importedItems||[];window.importedItems.push(id);
-  status.textContent='Добавлен предмет «'+name+'» в список '+slotNames[slot]+'. Нажми «Загрузить» и выбери его.';
+  status.textContent='Распознано: '+item.name+' · '+item.baseType+'. Добавлено в список '+slotNames[slot]+'.';
   window.pendingScreenshotSlot=null;imagePicker.value='';
   const card=document.querySelector('.item[data-slot="'+slot+'"]');
-  if(card){const menu=card.querySelector('.item-menu');if(menu)menu.classList.remove('open');}
- }catch(err){status.textContent='Ошибка: '+err.message;alert(err.message);window.pendingScreenshotSlot=null;imagePicker.value=''}
+  if(card){const menu=card.querySelector('.item-menu');if(menu){menu.classList.remove('open');const load=card.querySelector('.load-item');if(load)load.click();}}
+ }catch(err){status.textContent='Ошибка распознавания: '+err.message;alert(err.message);window.pendingScreenshotSlot=null;imagePicker.value=''}
 });
 const picker=document.getElementById('file');
 
