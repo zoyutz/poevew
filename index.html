@@ -18,14 +18,14 @@ button,.upload{border:1px solid #756044;background:linear-gradient(#3b3328,#2925
 .resrow{display:grid;grid-template-columns:75px 1fr 45px;gap:12px;align-items:center;margin:11px 0}.bar{height:10px;background:#303943;border-radius:20px;overflow:hidden}.fill{height:100%;border-radius:20px}.fire{background:#d56b56}.cold{background:#67aee1}.light{background:#d8c05e}.chaos{background:#ad7bd0}.resval{text-align:right;font-weight:750;font-variant-numeric:tabular-nums}
 .footer{color:#74808d;font-size:11px;text-align:center;padding:12px}
 @media(max-width:850px){.gear{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:650px){.gear{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.item{min-height:118px;padding:10px 8px}.upload-area{align-items:flex-start}.upload-actions{flex-wrap:wrap}.hint{text-align:left}body{padding:12px}.stats{grid-template-columns:repeat(2,1fr)}.gear{grid-template-columns:repeat(2,1fr)}.top{align-items:flex-start;flex-direction:column}.attr .num{font-size:25px}.section{padding:12px}}
-</style></head><body><div class="wrap">
+.gear-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.gear-head .sectitle{margin:0}.optimize-btn{border-color:#9b7b4d;background:linear-gradient(135deg,#70552f,#3c3022);color:#ffe2ad;letter-spacing:1px;font-size:12px;padding:10px 20px;box-shadow:0 4px 14px #0005}.optimize-btn:active{transform:translateY(1px)}.optimizer-result{display:none;margin:12px 0 14px;padding:10px 12px;border:1px solid #55745d;border-radius:8px;background:#1d2b25;color:#cce8d2;font-size:12px;line-height:1.7}.optimizer-result.visible{display:block}@media(max-width:650px){.gear-head{align-items:flex-start;flex-wrap:wrap}.gear-head .sectitle{flex:1 1 100%}.optimize-btn{width:100%;padding:13px;font-size:13px}}</style></head><body><div class="wrap">
 <header class="top"><div><div class="brand">EXILE <span style="color:var(--gold)">/</span> CHARACTER</div><div class="sub">PATH OF EXILE · BUILD OVERVIEW <span id="charInfo"> · Ведьма / Некромант · Уровень 91</span></div></div><div class="upload-area"><div class="upload-actions"><label class="upload" for="file">＋ ВЫБРАТЬ ФАЙЛ PoB</label><button type="button" class="clear-btn" id="clearBuild" onclick="return window.clearBuildView()">ОЧИСТИТЬ</button></div><input id="file" type="file" accept=".txt,.xml,.code,text/plain,application/xml"><div id="status" class="status">Исходный билд уже отображён</div><div class="hint">На iPhone открой HTML именно в Safari, не в окне предпросмотра.</div></div></header>
 <section class="section"><div class="sectitle">Атрибуты персонажа</div><div class="attrs">
 <div class="attr"><div class="num str" id="Str">230</div><div class="name str">СИЛА</div></div>
 <div class="attr"><div class="num dex" id="Dex">143</div><div class="name dex">ЛОВКОСТЬ</div></div>
 <div class="attr"><div class="num int" id="Int">267</div><div class="name int">ИНТЕЛЛЕКТ</div></div></div></section>
 <section class="section"><div class="sectitle">Защитные характеристики</div><div class="stats" id="defenses"><div class="stat"><label>Здоровье</label><b>5 224</b></div><div class="stat"><label>Мана</label><b>924</b></div><div class="stat"><label>Энергетический щит</label><b>698</b></div><div class="stat"><label>Броня</label><b>2 195</b></div><div class="stat"><label>Уклонение</label><b>2 781</b></div><div class="stat"><label>Шанс блока атак</label><b>65%</b></div><div class="stat"><label>Шанс блока чар</label><b>54%</b></div></div></section>
-<section class="section"><div class="sectitle">Экипировка · защитные параметры предметов</div><div class="gear" id="gear"><div class="item" tabindex="0"><div class="glyph">♜</div><div class="slot">Шлем</div><div class="iname rarity-rare">Fate Visage</div><div class="tooltip">Rarity: RARE
+<section class="section"><div class="gear-head"><div class="sectitle">Экипировка · защитные параметры предметов</div><button type="button" class="optimize-btn" id="optimizeGear">✦ ПОДБОР</button></div><div id="optimizerResult" class="optimizer-result"></div><div class="gear" id="gear"><div class="item" tabindex="0"><div class="glyph">♜</div><div class="slot">Шлем</div><div class="iname rarity-rare">Fate Visage</div><div class="tooltip">Rarity: RARE
 Fate Visage
 Sinner Tricorne
 Evasion: 653
@@ -205,24 +205,35 @@ function itemContribution(txt){
   let m=line.match(/^\+(\d+) to maximum Life\b/i);if(m)c.Life+=Number(m[1]);
   m=line.match(/^Armour:\s*(\d+)/i);if(m)c.Armour+=Number(m[1]);
   m=line.match(/^Evasion:\s*(\d+)/i);if(m)c.Evasion+=Number(m[1]);
-  const types=[['Fire','FireResist'],['Cold','ColdResist'],['Lightning','LightningResist'],['Chaos','ChaosResist']];
-  for(const [type,key] of types){
-   const re=new RegExp('^\\+?(\\d+)%?\\s+to\\s+'+type+' Resistance\\b','i');
-   m=line.match(re);if(m)c[key]+=Number(m[1]);
+  m=line.match(/^([+-]?\d+(?:\.\d+)?)%\s+to\s+(.+?)\s+Resistances?\b/i);
+  if(m){
+   const value=Number(m[1]),target=m[2].toLowerCase();
+   if(/all resistances/.test(target)){c.FireResist+=value;c.ColdResist+=value;c.LightningResist+=value;c.ChaosResist+=value}
+   else if(/all elemental resistances/.test(target)){c.FireResist+=value;c.ColdResist+=value;c.LightningResist+=value}
+   else {
+    if(/fire/.test(target))c.FireResist+=value;
+    if(/cold/.test(target))c.ColdResist+=value;
+    if(/lightning/.test(target))c.LightningResist+=value;
+    if(/chaos/.test(target))c.ChaosResist+=value;
+   }
   }
  }
  return c;
 }
-function refreshCalculatedStats(){
- if(!window.baseStats||!window.baseSlotMap)return;
- const items=window.pobItems||{},slots=window.slotMap||{},base=window.baseStats;
+function calculateCurrentTotals(){
+ const items=window.pobItems||{},slots=window.slotMap||{},base=window.baseStats||{};
  const keys=['Life','Armour','Evasion','FireResist','ColdResist','LightningResist','ChaosResist'];
  const totals={};keys.forEach(k=>totals[k]=Number(base[k]||0));
- for(const slot of Object.keys(window.baseSlotMap)){
+ for(const slot of Object.keys(window.baseSlotMap||{})){
   const original=itemContribution(items[window.baseSlotMap[slot]]);
   const current=itemContribution(items[slots[slot]]);
   keys.forEach(k=>totals[k]+=current[k]-original[k]);
  }
+ return totals;
+}
+function refreshCalculatedStats(){
+ if(!window.baseStats||!window.baseSlotMap)return;
+ const totals=calculateCurrentTotals();
  const defs=document.getElementById('defenses');
  if(defs){
   defs.querySelectorAll('.stat').forEach(el=>{
@@ -234,6 +245,60 @@ function refreshCalculatedStats(){
  const rs=[['FireResist','Огонь','fire'],['ColdResist','Холод','cold'],['LightningResist','Молния','light'],['ChaosResist','Хаос','chaos']];
  const res=document.getElementById('resists');
  if(res)res.innerHTML=rs.map(([k,n,c])=>{const v=totals[k];return '<div class="resrow"><b>'+n+'</b><div class="bar"><div class="fill '+c+'" style="width:'+Math.max(0,Math.min(100,v))+'%"></div></div><div class="resval">'+fmt(v)+'%</div></div>'}).join('');
+}
+function optimizeGearForResists(){
+ if(!window.baseStats||!window.baseSlotMap){alert('Сначала загрузи PoB-билд.');return}
+ const slots=['Helmet','Amulet','Body Armour','Gloves','Boots','Weapon 1','Weapon 2','Ring 1','Ring 2','Belt'];
+ const items=window.pobItems||{},baseSlots=window.baseSlotMap||{},base=window.baseStats;
+ const original={};slots.forEach(s=>original[s]=itemContribution(items[baseSlots[s]]));
+ const initial={fire:Number(base.FireResist||0),cold:Number(base.ColdResist||0),light:Number(base.LightningResist||0),chaos:Number(base.ChaosResist||0),choice:{}};
+ let states=[initial];
+ const width=35000;
+ for(const slot of slots){
+  const ids=Object.entries(items).filter(([id,txt])=>gearSlotMatches(slot,txt)).map(([id])=>id);
+  const options=[...new Set(['',...(baseSlots[slot]&&items[baseSlots[slot]]?[baseSlots[slot]]:[]),...ids])];
+  const expanded=new Map();
+  for(const state of states)for(const id of options){
+   const part=itemContribution(items[id]);
+   const prev=original[slot]||{FireResist:0,ColdResist:0,LightningResist:0,ChaosResist:0};
+   const next={fire:state.fire+part.FireResist-prev.FireResist,cold:state.cold+part.ColdResist-prev.ColdResist,light:state.light+part.LightningResist-prev.LightningResist,chaos:state.chaos+part.ChaosResist-prev.ChaosResist,choice:{...state.choice,[slot]:id}};
+   const f=Math.min(75,Math.round(next.fire*10)/10),c=Math.min(75,Math.round(next.cold*10)/10),l=Math.min(75,Math.round(next.light*10)/10),z=Math.round(next.chaos*10)/10;
+   const key=[f,c,l,z].join('|');
+   if(!expanded.has(key))expanded.set(key,next);
+  }
+  states=[...expanded.values()];
+  if(states.length>width){
+   states.sort((a,b)=>{
+    const progress=x=>Math.min(75,x.fire)+Math.min(75,x.cold)+Math.min(75,x.light);
+    const pa=progress(a),pb=progress(b);
+    if(pa!==pb)return pb-pa;
+    if(a.chaos!==b.chaos)return b.chaos-a.chaos;
+    return Math.min(a.fire,a.cold,a.light)-Math.min(b.fire,b.cold,b.light);
+   });
+   states=states.slice(0,width);
+  }
+ }
+ const score=s=>{
+  const deficits=[Math.max(0,75-s.fire),Math.max(0,75-s.cold),Math.max(0,75-s.light)];
+  return {sum:deficits.reduce((a,b)=>a+b,0),worst:Math.max(...deficits),chaos:s.chaos};
+ };
+ states.sort((a,b)=>{
+  const x=score(a),y=score(b);
+  return x.sum-y.sum||x.worst-y.worst||y.chaos-x.chaos;
+ });
+ const best=states[0];if(!best)return;
+ window.slotMap={...window.slotMap,...best.choice};
+ window.renderGear();refreshCalculatedStats();
+ const final=calculateCurrentTotals();
+ const allCapped=final.FireResist>=75&&final.ColdResist>=75&&final.LightningResist>=75;
+ const result=document.getElementById('optimizerResult');
+ if(result){
+  result.innerHTML=(allCapped?'Капы 75% закрыты.':'Лучший доступный вариант — дефицит элементальных резистов минимизирован.')+
+   '<br>Огонь '+fmt(final.FireResist)+'% · Холод '+fmt(final.ColdResist)+'% · Молния '+fmt(final.LightningResist)+'% · Хаос '+fmt(final.ChaosResist)+'%';
+  result.classList.add('visible');
+ }
+ const status=document.getElementById('status');
+ if(status)status.textContent=allCapped?'Подбор завершён: элементальные капы закрыты, хаос максимизирован.':'Подбор завершён: выбран вариант с минимальным дефицитом элементальных резистов и максимальным хаосом среди рассмотренных комбинаций.';
 }
 const ITEM_LIBRARY_KEY='poeGearItemLibrary_v1';
 window.loadItemLibrary=function(){
@@ -323,6 +388,7 @@ function openItemDescription(slot){
  document.getElementById('modalItemContent').innerHTML=(primary.length?'<div class="modal-group">Основные характеристики</div>'+primary.map(x=>'<div class="modal-stat primary">'+esc(x)+'</div>').join(''):'')+(other.length?'<div class="modal-group">Остальные свойства</div>'+other.map(x=>'<div class="modal-stat">'+esc(x)+'</div>').join(''):'');
  document.getElementById('itemModal').classList.add('open');
 }
+document.getElementById('optimizeGear').addEventListener('click',optimizeGearForResists);
 document.getElementById('closeItemModal').addEventListener('click',()=>document.getElementById('itemModal').classList.remove('open'));
 document.getElementById('itemModal').addEventListener('click',e=>{if(e.target.id==='itemModal')e.currentTarget.classList.remove('open')});
 document.getElementById('gear').addEventListener('click',e=>{
