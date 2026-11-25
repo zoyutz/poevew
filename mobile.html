@@ -140,6 +140,17 @@ body button,body .upload{font-size:15px;font-weight:700}
 .resval{font-weight:900}
 .optimizer-result{font-size:15px;font-weight:700;line-height:1.6}
 
+/* Resistance panel readability: enlarge labels and values without changing section layout */
+#resists .resrow{grid-template-columns:88px minmax(40px,1fr) 58px;gap:12px;min-height:32px;margin:13px 0;font-size:18px;font-weight:800}
+#resists .resrow>b{font-size:18px;font-weight:900;white-space:nowrap}
+#resists .resval{font-size:20px;font-weight:900;line-height:1.2}
+#resists .bar{height:12px}
+@media(max-width:650px){
+ #resists .resrow{grid-template-columns:76px minmax(36px,1fr) 54px;gap:9px;min-height:32px;margin:12px 0}
+ #resists .resrow>b{font-size:17px}
+ #resists .resval{font-size:19px}
+}
+
 </style></head><body><div class="wrap"><div class="mobile-switch">Мобильная версия · <a href="./index.html">Открыть обычную версию</a></div>
 <header class="top"><div><div class="brand">EXILE <span style="color:var(--gold)">/</span> CHARACTER</div><div class="sub">PATH OF EXILE · BUILD OVERVIEW <span id="charInfo"> · Ведьма / Некромант · Уровень 91</span></div></div><div class="upload-area"><div class="upload-actions"><label class="upload" for="file">＋ ВЫБРАТЬ ФАЙЛ PoB</label><button type="button" class="clear-btn" id="clearBuild" onclick="return window.clearBuildView()">ОЧИСТИТЬ</button></div><input id="file" type="file" accept=".txt,.xml,.code,text/plain,application/xml"><div id="status" class="status">Исходный билд уже отображён</div><div class="hint">На iPhone открой HTML именно в Safari, не в окне предпросмотра.</div></div></header>
 <section class="section"><div class="sectitle">Атрибуты персонажа</div><div class="attrs">
