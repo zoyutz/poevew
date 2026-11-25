@@ -310,7 +310,7 @@ document.getElementById('gear').addEventListener('click',e=>{
   const candidates=Object.entries(window.pobItems||{}).filter(([id,txt])=>id!==currentId&&gearSlotMatches(slot,txt));
   const imported=new Set(window.importedItems||[]);
   const options=candidates.map(([id,txt])=>'<button type="button" data-item-id="'+esc(id)+'"><b>'+esc(nameOf(txt))+'</b><small>'+(imported.has(id)?'Добавленный предмет':'Предмет из PoB')+'</small></button>').join('');
-  menu.innerHTML='<div class="menu-title">'+esc(slotNames[slot])+'</div><button type="button" class="empty-choice" data-item-id=""><b>Пусто</b><small>Оставить слот свободным</small></button>'+current+(options?'<div class="menu-caption">Другие предметы этого типа</div>'+options:'')+'<button type="button" class="add-text-item" data-add-text-item="1">＋ Вставить текст предмета</button>';menu.classList.add('open');return;
+  menu.innerHTML='<div class="menu-title">'+esc(slotNames[slot])+'</div><button type="button" class="empty-choice" data-item-id=""><b>Пусто</b><small>Оставить слот свободным</small></button>'+current+(options?'<div class="menu-caption">Другие предметы этого типа</div>'+options:'')+'<button type="button" class="add-text-item" data-add-text-item="1">＋ Вставить из буфера обмена</button>';menu.classList.add('open');return;
  }
  const choice=e.target.closest('.item-menu button');if(choice){window.slotMap[slot]=choice.dataset.itemId||'';window.renderGear();refreshCalculatedStats()}
 });
@@ -318,13 +318,27 @@ document.addEventListener('click',e=>{if(!e.target.closest('.item'))document.que
 
 function openTextImport(slot){
  window.pendingTextSlot=slot;
- document.getElementById('modalItemName').textContent='Импорт предмета';
- document.getElementById('modalItemBase').textContent='Вставь скопированный в Path of Exile текст · '+slotNames[slot];
- document.getElementById('modalItemContent').innerHTML='<div class="modal-group">Текст предмета</div><textarea id="itemTextInput" rows="12" placeholder="Rarity: Rare&#10;Название предмета&#10;Базовый тип&#10;--------&#10;Item Level: 85&#10;+ to maximum Life&#10;..." style="width:100%;resize:vertical;background:#111820;color:#e7e9ec;border:1px solid #536170;border-radius:8px;padding:12px;font:12px/1.5 ui-monospace,monospace"></textarea><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><button type="button" class="clear-btn" id="cancelTextImport">Отмена</button><button type="button" id="saveTextImport">Добавить предмет</button></div>';
+ document.getElementById('modalItemName').textContent='Импорт из буфера обмена';
+ document.getElementById('modalItemBase').textContent='Скопируй предмет в Path of Exile, затем вставь сюда · '+slotNames[slot];
+ document.getElementById('modalItemContent').innerHTML='<div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:10px"><button type="button" id="readClipboard">Вставить из буфера обмена</button></div><div class="modal-group">Текст предмета</div><textarea id="itemTextInput" rows="12" placeholder="Скопируй предмет в игре и нажми «Вставить из буфера обмена» или вставь текст сюда вручную…" style="width:100%;resize:vertical;background:#111820;color:#e7e9ec;border:1px solid #536170;border-radius:8px;padding:12px;font:12px/1.5 ui-monospace,monospace"></textarea><div id="clipboardStatus" style="font-size:11px;color:#9aa5b1;margin-top:6px">Буфер обмена будет прочитан после нажатия кнопки</div><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><button type="button" class="clear-btn" id="cancelTextImport">Отмена</button><button type="button" id="saveTextImport">Добавить предмет</button></div>';
  document.getElementById('itemModal').classList.add('open');
  document.getElementById('itemTextInput').focus();
 }
+async function pasteItemFromClipboard(){
+ const status=document.getElementById('clipboardStatus');
+ try{
+  if(!navigator.clipboard?.readText)throw new Error('Браузер не разрешил чтение буфера обмена. Используй обычную вставку в поле.');
+  const value=await navigator.clipboard.readText();
+  if(!value.trim())throw new Error('Буфер обмена пуст. Сначала скопируй предмет в игре.');
+  document.getElementById('itemTextInput').value=value.trim();
+  status.textContent='Текст получен из буфера обмена. Проверь его и нажми «Добавить предмет».';
+ }catch(err){
+  status.textContent=err.message||'Не удалось прочитать буфер. Вставь текст в поле вручную.';
+  document.getElementById('itemTextInput').focus();
+ }
+}
 document.getElementById('modalItemContent').addEventListener('click',e=>{
+ if(e.target.id==='readClipboard'){pasteItemFromClipboard();return}
  if(e.target.id==='cancelTextImport'){document.getElementById('itemModal').classList.remove('open');return}
  if(e.target.id!=='saveTextImport')return;
  const slot=window.pendingTextSlot;
