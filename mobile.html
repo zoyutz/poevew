@@ -464,7 +464,7 @@ function planTradeResists(){
  const split=(amount,count,index)=>Math.floor(amount/count)+(index<amount%count?1:0);
  const rows=free.map((slot,i)=>{
   const requirements=deficits.map(d=>({...d,value:split(d.amount,free.length,i)})).filter(d=>d.value>0);
-  const tradeText=requirements.map(d=>'+ '+d.value+'% to '+d.trade+' Resistance').join('\n');
+  const tradeText=requirements.map(d=>'+'+d.value+'% to '+d.trade+' Resistance').join('\n');
   const labels=requirements.length?requirements.map(d=>'<div class="trade-resist-line"><span>'+d.label+'</span><b>+'+d.value+'%</b></div>').join(''):'<div class="trade-resist-line"><span>Дополнительные резисты не требуются</span></div>';
   return '<div class="trade-resist-card"><div class="trade-resist-head"><b>'+slotNames[slot]+'</b><button type="button" class="trade-copy-btn" data-copy-trade="'+encodeURIComponent(tradeText)+'">Копировать для Trade</button></div>'+labels+'</div>';
  }).join('');
@@ -678,7 +678,7 @@ async function pasteItemFromClipboard(){
  }
 }
 document.getElementById('modalItemContent').addEventListener('click',e=>{
- if(e.target.closest('.trade-copy-btn')){const btn=e.target.closest('.trade-copy-btn');const value=decodeURIComponent(btn.dataset.copyTrade||'');if(!value){btn.textContent='Нет требований';return}navigator.clipboard?.writeText(value).then(()=>{btn.textContent='Скопировано'}).catch(()=>{btn.textContent='Не удалось скопировать'});return}
+ if(e.target.closest('.trade-copy-btn')){const btn=e.target.closest('.trade-copy-btn');const value=decodeURIComponent(btn.dataset.copyTrade||'');if(!value){btn.textContent='Нет требований';return}if(!navigator.clipboard?.writeText){btn.textContent='Буфер недоступен';return}navigator.clipboard.writeText(value).then(()=>{btn.textContent='Скопировано'}).catch(()=>{btn.textContent='Не удалось скопировать'});return}
 
  if(e.target.id==='readClipboard'){pasteItemFromClipboard();return}
  if(e.target.id==='cancelTextImport'){document.getElementById('itemModal').classList.remove('open');return}
