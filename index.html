@@ -261,7 +261,8 @@ window.renderGear=function(){
 };
 function gearSlotMatches(slot,txt){
  const lines=(txt||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
- const base=(lines[2]||'').toLowerCase();
+ const hasRarity=/^Rarity:\s*/i.test(lines[0]||'');
+ const base=(lines[hasRarity?2:1]||'').toLowerCase();
  const has=r=>r.test(base);
  const rules={
   'Helmet':/helmet|tricorne|bascinet|burgonet|circlet|crown|hood|mask|cap|helm|bone helmet|great helmet|raven mask|close helmet/,
@@ -303,7 +304,7 @@ document.getElementById('gear').addEventListener('click',e=>{
   const menu=card.querySelector('.item-menu');document.querySelectorAll('.item-menu.open').forEach(x=>{if(x!==menu)x.classList.remove('open')});
   if(menu.classList.contains('open')){menu.classList.remove('open');return}
   const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const nameOf=txt=>{const l=(txt||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);return l.find(x=>/^Rarity:/.test(x))?.replace(/^Rarity:\s*\w+\s*/,'')||l[1]||'Предмет'};
+  const nameOf=txt=>{const l=(txt||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);return l.find(x=>/^Rarity:/.test(x))?.replace(/^Rarity:\s*\w+\s*/,'')||l[0]||'Предмет'};
   const currentId=window.baseSlotMap?.[slot]||'';
   const currentTxt=window.pobItems?.[currentId]||'';
   const current=currentId&&gearSlotMatches(slot,currentTxt)?'<button type="button" class="equipped-choice" data-item-id="'+esc(currentId)+'"><b>Сейчас надето</b><small>'+esc(nameOf(currentTxt))+'</small></button>':'';
