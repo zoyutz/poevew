@@ -616,3 +616,9 @@ picker.addEventListener('change',async e=>{
 });
 (async()=>{try{render(await parseCode(initialCode))}catch(e){document.getElementById('status').textContent='Загрузите PoB-файл'}})();
 </script></body></html>
+
+/* Fix: keep the item-menu close control visible in the Win95 skin */
+.item-menu .menu-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 2px 6px}
+.item-menu .menu-head .menu-title{padding:6px 8px;flex:1;min-width:0}
+.item-menu button.menu-close{display:flex!important;flex:0 0 32px!important;width:32px!important;height:32px!important;min-height:32px!important;padding:0!important;margin:0!important;align-items:center!important;justify-content:center!important;text-align:center!important;font-size:19px!important;line-height:1!important;font-weight:bold!important;color:#000!important;background:#c0c0c0!important;border:2px solid!important;border-color:#fff #404040 #404040 #fff!important;border-radius:0!important;box-shadow:1px 1px 0 #000!important;visibility:visible!important;opacity:1!important}
+.item-menu button.menu-close:active{border-color:#404040 #fff #fff #404040!important;box-shadow:none!important}
