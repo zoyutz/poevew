@@ -235,12 +235,29 @@ function refreshCalculatedStats(){
  const res=document.getElementById('resists');
  if(res)res.innerHTML=rs.map(([k,n,c])=>{const v=totals[k];return '<div class="resrow"><b>'+n+'</b><div class="bar"><div class="fill '+c+'" style="width:'+Math.max(0,Math.min(100,v))+'%"></div></div><div class="resval">'+fmt(v)+'%</div></div>'}).join('');
 }
+const ITEM_LIBRARY_KEY='poeGearItemLibrary_v1';
+window.loadItemLibrary=function(){
+ try{const data=JSON.parse(localStorage.getItem(ITEM_LIBRARY_KEY)||'[]');return Array.isArray(data)?data.filter(x=>x&&typeof x.id==='string'&&typeof x.text==='string'):[]}
+ catch(e){return []}
+};
+window.saveItemLibrary=function(){
+ try{localStorage.setItem(ITEM_LIBRARY_KEY,JSON.stringify(window.itemLibrary||[]));return true}
+ catch(e){const status=document.getElementById('status');if(status)status.textContent='Не удалось сохранить библиотеку: возможно, переполнено хранилище браузера.';return false}
+};
+window.itemLibrary=window.loadItemLibrary();
+window.importedItems=(window.itemLibrary||[]).map(x=>x.id);
+function addLibraryItemsToBuild(){
+ window.itemLibrary=window.loadItemLibrary();
+ window.importedItems=window.itemLibrary.map(x=>x.id);
+ window.itemLibrary.forEach(x=>{window.pobItems[x.id]=x.text});
+}
 function render(doc){
  const build=doc.querySelector('Build');if(!build)throw Error('В файле не найден раздел Build.');
  const stats={};doc.querySelectorAll('PlayerStat').forEach(n=>stats[n.getAttribute('stat')]=n.getAttribute('value'));
  ['Str','Dex','Int'].forEach(k=>document.getElementById(k).textContent=fmt(stats[k]));
  document.getElementById('charInfo').textContent=` · ${build.getAttribute('className')||''} / ${build.getAttribute('ascendClassName')||''} · Уровень ${build.getAttribute('level')||'—'}`;
  window.pobItems={};doc.querySelectorAll('Items > Item').forEach(n=>window.pobItems[n.getAttribute('id')]=itemText(n));
+ addLibraryItemsToBuild();
  window.slotMap={};doc.querySelectorAll('ItemSet').forEach((set,i)=>{if(i===0)set.querySelectorAll(':scope > Slot').forEach(s=>window.slotMap[s.getAttribute('name')]=s.getAttribute('itemId'))});
  window.baseSlotMap={...window.slotMap};
  window.baseStats={};['Life','Armour','Evasion','FireResist','ColdResist','LightningResist','ChaosResist','Mana','EnergyShield','EffectiveBlockChance','EffectiveSpellBlockChance'].forEach(k=>window.baseStats[k]=Number(stats[k]||0));
@@ -356,8 +373,10 @@ document.getElementById('modalItemContent').addEventListener('click',e=>{
  const id='imported_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
  window.pobItems=window.pobItems||{};
  window.pobItems[id]=txt;
- window.importedItems=window.importedItems||[];
- window.importedItems.push(id);
+ window.itemLibrary=window.itemLibrary||window.loadItemLibrary();
+ window.itemLibrary.push({id,text:txt,addedAt:Date.now()});
+ window.importedItems=window.itemLibrary.map(x=>x.id);
+ window.saveItemLibrary();
  document.getElementById('itemModal').classList.remove('open');
  window.pendingTextSlot=null;
  const status=document.getElementById('status');
@@ -377,7 +396,9 @@ window.clearBuildView = function(){
  const info=document.getElementById('charInfo'); if(info)info.textContent='';
  const defs=document.getElementById('defenses');
  if(defs) defs.innerHTML=Object.values(statNames).map(n=>'<div class="stat"><label>'+n+'</label><b>'+dash+'</b></div>').join('');
- window.pobItems={};window.slotMap={};window.baseStats=null;window.baseSlotMap=null;if(document.getElementById('gear'))window.renderGear();
+ window.itemLibrary=window.loadItemLibrary();window.importedItems=window.itemLibrary.map(x=>x.id);
+ window.pobItems={};window.itemLibrary.forEach(x=>window.pobItems[x.id]=x.text);
+ window.slotMap={};window.baseStats=null;window.baseSlotMap=null;if(document.getElementById('gear'))window.renderGear();
  const res=document.getElementById('resists');
  if(res) res.innerHTML=['Огонь','Холод','Молния','Хаос'].map(n=>'<div class="resrow"><b>'+n+'</b><div class="bar"></div><div class="resval">'+dash+'</div></div>').join('');
  const fileInput=document.getElementById('file'); if(fileInput)fileInput.value='';
