@@ -193,17 +193,55 @@ async function parseCode(code){
  return new DOMParser().parseFromString(await new Response(stream).text(),'application/xml');
 }
 function itemText(node){return (node?.textContent||'').trim()}
+function itemContribution(txt){
+ const c={Life:0,Armour:0,Evasion:0,FireResist:0,ColdResist:0,LightningResist:0,ChaosResist:0};
+ if(!txt)return c;
+ const lines=txt.split(/\r?\n/).map(x=>x.trim());
+ for(const line of lines){
+  let m=line.match(/^\+(\d+) to maximum Life\b/i);if(m)c.Life+=Number(m[1]);
+  m=line.match(/^Armour:\s*(\d+)/i);if(m)c.Armour+=Number(m[1]);
+  m=line.match(/^Evasion:\s*(\d+)/i);if(m)c.Evasion+=Number(m[1]);
+  const types=[['Fire','FireResist'],['Cold','ColdResist'],['Lightning','LightningResist'],['Chaos','ChaosResist']];
+  for(const [type,key] of types){
+   const re=new RegExp('^\\+?(\\d+)%?\\s+to\\s+'+type+' Resistance\\b','i');
+   m=line.match(re);if(m)c[key]+=Number(m[1]);
+  }
+ }
+ return c;
+}
+function refreshCalculatedStats(){
+ if(!window.baseStats||!window.baseSlotMap)return;
+ const items=window.pobItems||{},slots=window.slotMap||{},base=window.baseStats;
+ const keys=['Life','Armour','Evasion','FireResist','ColdResist','LightningResist','ChaosResist'];
+ const totals={};keys.forEach(k=>totals[k]=Number(base[k]||0));
+ for(const slot of Object.keys(window.baseSlotMap)){
+  const original=itemContribution(items[window.baseSlotMap[slot]]);
+  const current=itemContribution(items[slots[slot]]);
+  keys.forEach(k=>totals[k]+=current[k]-original[k]);
+ }
+ const defs=document.getElementById('defenses');
+ if(defs){
+  defs.querySelectorAll('.stat').forEach(el=>{
+   const label=el.querySelector('label')?.textContent;
+   const key=Object.keys(statNames).find(k=>statNames[k]===label);
+   if(key&&totals[key]!==undefined)el.querySelector('b').textContent=fmt(Math.max(0,totals[key]))+(key.includes('Chance')?'%':'');
+  });
+ }
+ const rs=[['FireResist','Огонь','fire'],['ColdResist','Холод','cold'],['LightningResist','Молния','light'],['ChaosResist','Хаос','chaos']];
+ const res=document.getElementById('resists');
+ if(res)res.innerHTML=rs.map(([k,n,c])=>{const v=totals[k];return '<div class="resrow"><b>'+n+'</b><div class="bar"><div class="fill '+c+'" style="width:'+Math.max(0,Math.min(100,v))+'%"></div></div><div class="resval">'+fmt(v)+'%</div></div>'}).join('');
+}
 function render(doc){
  const build=doc.querySelector('Build');if(!build)throw Error('В файле не найден раздел Build.');
  const stats={};doc.querySelectorAll('PlayerStat').forEach(n=>stats[n.getAttribute('stat')]=n.getAttribute('value'));
  ['Str','Dex','Int'].forEach(k=>document.getElementById(k).textContent=fmt(stats[k]));
  document.getElementById('charInfo').textContent=` · ${build.getAttribute('className')||''} / ${build.getAttribute('ascendClassName')||''} · Уровень ${build.getAttribute('level')||'—'}`;
- document.getElementById('defenses').innerHTML=Object.entries(statNames).map(([k,n])=>`<div class="stat"><label>${n}</label><b>${fmt(stats[k])}${k.includes('Chance')?'%':''}</b></div>`).join('');
  window.pobItems={};doc.querySelectorAll('Items > Item').forEach(n=>window.pobItems[n.getAttribute('id')]=itemText(n));
  window.slotMap={};doc.querySelectorAll('ItemSet').forEach((set,i)=>{if(i===0)set.querySelectorAll(':scope > Slot').forEach(s=>window.slotMap[s.getAttribute('name')]=s.getAttribute('itemId'))});
- window.renderGear();
- const rs=[['FireResist','Огонь','fire'],['ColdResist','Холод','cold'],['LightningResist','Молния','light'],['ChaosResist','Хаос','chaos']];
- document.getElementById('resists').innerHTML=rs.map(([k,n,c])=>{let v=Number(stats[k]||0);return `<div class="resrow"><b>${n}</b><div class="bar"><div class="fill ${c}" style="width:${Math.max(0,Math.min(100,v))}%"></div></div><div class="resval">${fmt(stats[k])}%</div></div>`}).join('');
+ window.baseSlotMap={...window.slotMap};
+ window.baseStats={};['Life','Armour','Evasion','FireResist','ColdResist','LightningResist','ChaosResist','Mana','EnergyShield','EffectiveBlockChance','EffectiveSpellBlockChance'].forEach(k=>window.baseStats[k]=Number(stats[k]||0));
+ document.getElementById('defenses').innerHTML=Object.entries(statNames).map(([k,n])=>`<div class="stat"><label>${n}</label><b>${fmt(stats[k])}${k.includes('Chance')?'%':''}</b></div>`).join('');
+ window.renderGear();refreshCalculatedStats();
 }
 
 window.renderGear=function(){
@@ -244,7 +282,7 @@ document.getElementById('gear').addEventListener('click',e=>{
   const opts=Object.entries(window.pobItems||{}).map(([id,txt])=>{const l=txt.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);const nm=l.find(x=>/^Rarity:/.test(x))?.replace(/^Rarity:\s*\w+\s*/,'')||l[1]||'Предмет';return '<button type="button" data-item-id="'+id+'">'+nm.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</button>'}).join('');
   menu.innerHTML='<button type="button" class="empty-choice" data-item-id="">Пусто — оставить слот свободным</button>'+opts;menu.classList.add('open');return;
  }
- const choice=e.target.closest('.item-menu button');if(choice){window.slotMap[slot]=choice.dataset.itemId||'';window.renderGear()}
+ const choice=e.target.closest('.item-menu button');if(choice){window.slotMap[slot]=choice.dataset.itemId||'';window.renderGear();refreshCalculatedStats()}
 });
 document.addEventListener('click',e=>{if(!e.target.closest('.item'))document.querySelectorAll('.item-menu.open').forEach(x=>x.classList.remove('open'))});
 
@@ -259,7 +297,7 @@ window.clearBuildView = function(){
  const info=document.getElementById('charInfo'); if(info)info.textContent='';
  const defs=document.getElementById('defenses');
  if(defs) defs.innerHTML=Object.values(statNames).map(n=>'<div class="stat"><label>'+n+'</label><b>'+dash+'</b></div>').join('');
- window.pobItems={};window.slotMap={};if(document.getElementById('gear'))window.renderGear();
+ window.pobItems={};window.slotMap={};window.baseStats=null;window.baseSlotMap=null;if(document.getElementById('gear'))window.renderGear();
  const res=document.getElementById('resists');
  if(res) res.innerHTML=['Огонь','Холод','Молния','Хаос'].map(n=>'<div class="resrow"><b>'+n+'</b><div class="bar"></div><div class="resval">'+dash+'</div></div>').join('');
  const fileInput=document.getElementById('file'); if(fileInput)fileInput.value='';
