@@ -15,7 +15,7 @@ button,.upload{border:1px solid #756044;background:linear-gradient(#3b3328,#2925
 .footer{color:#74808d;font-size:11px;text-align:center;padding:12px}
 @media(max-width:850px){.gear{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:650px){.gear{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.item{min-height:118px;padding:10px 8px}.upload-area{align-items:flex-start}.upload-actions{flex-wrap:wrap}.hint{text-align:left}body{padding:12px}.stats{grid-template-columns:repeat(2,1fr)}.gear{grid-template-columns:repeat(2,1fr)}.top{align-items:flex-start;flex-direction:column}.attr .num{font-size:25px}.section{padding:12px}}
 </style></head><body><div class="wrap">
-<header class="top"><div><div class="brand">EXILE <span style="color:var(--gold)">/</span> CHARACTER</div><div class="sub">PATH OF EXILE · BUILD OVERVIEW <span id="charInfo"> · Ведьма / Некромант · Уровень 91</span></div></div><div class="upload-area"><div class="upload-actions"><label class="upload" for="file">＋ ВЫБРАТЬ ФАЙЛ PoB</label><button type="button" class="clear-btn" id="clearBuild" onclick="return window.clearBuildView()">ОЧИСТИТЬ</button></div><input id="file" type="file" accept=".txt,.xml,.code,text/plain,application/xml"><input id="imageFile" type="file" accept="image/*" style="display:none"><button type="button" class="clear-btn" id="imageUpload">＋ СКРИНШОТ ПРЕДМЕТА</button><div id="status" class="status">Исходный билд уже отображён</div><div class="hint">На iPhone открой HTML именно в Safari, не в окне предпросмотра.</div></div></header>
+<header class="top"><div><div class="brand">EXILE <span style="color:var(--gold)">/</span> CHARACTER</div><div class="sub">PATH OF EXILE · BUILD OVERVIEW <span id="charInfo"> · Ведьма / Некромант · Уровень 91</span></div></div><div class="upload-area"><div class="upload-actions"><label class="upload" for="file">＋ ВЫБРАТЬ ФАЙЛ PoB</label><button type="button" class="clear-btn" id="clearBuild" onclick="return window.clearBuildView()">ОЧИСТИТЬ</button><button type="button" class="clear-btn" id="imageUpload">＋ СКРИНШОТ ПРЕДМЕТА</button></div><input id="file" type="file" accept=".txt,.xml,.code,text/plain,application/xml"><input id="imageFile" type="file" accept="image/*" style="display:none"><div id="status" class="status">Исходный билд уже отображён</div><div class="hint">На iPhone открой HTML именно в Safari, не в окне предпросмотра.</div></div></header>
 <section class="section"><div class="sectitle">Атрибуты персонажа</div><div class="attrs">
 <div class="attr"><div class="num str" id="Str">230</div><div class="name str">СИЛА</div></div>
 <div class="attr"><div class="num dex" id="Dex">143</div><div class="name dex">ЛОВКОСТЬ</div></div>
@@ -312,21 +312,24 @@ document.getElementById('clearBuild').addEventListener('click', function(event){
 const imagePicker=document.getElementById('imageFile');
 document.getElementById('imageUpload').addEventListener('click',()=>imagePicker.click());
 imagePicker.addEventListener('change',async e=>{
- const file=e.target.files?.[0];if(!file)return;const status=document.getElementById('status');status.textContent='Распознаю скриншот…';
+ const file=e.target.files?.[0];if(!file)return;
+ const status=document.getElementById('status');status.textContent='Распознаю скриншот…';
  try{
-  if(!window.Tesseract)throw new Error('Модуль OCR не загрузился. Проверь интернет и обнови страницу.');
+  if(!window.Tesseract)throw new Error('Модуль распознавания не загрузился. Проверь интернет и обнови страницу.');
   const result=await Tesseract.recognize(file,'eng',{logger:m=>{if(m.status==='recognizing text')status.textContent='Распознавание: '+Math.round((m.progress||0)*100)+'%'}});
   const lines=(result.data.text||'').replace(/\r/g,'').split('\n').map(x=>x.trim()).filter(Boolean);
-  if(lines.length<3)throw new Error('На скриншоте не удалось распознать предмет.');
-  const rarity=/unique/i.test(lines.join(' '))?'UNIQUE':/magic/i.test(lines.join(' '))?'MAGIC':/normal/i.test(lines.join(' '))?'NORMAL':'RARE';
-  const clean=lines.filter(x=>!/^rarity:|^item level:|^level req:|^quality:|^sockets:|^corrupted/i.test(x));
+  const rarityLine=lines.find(x=>/^rarity:/i.test(x))||'';
+  const rarity=/unique/i.test(rarityLine)?'UNIQUE':/magic/i.test(rarityLine)?'MAGIC':/normal/i.test(rarityLine)?'NORMAL':'RARE';
+  const clean=lines.filter(x=>!/^rarity:|^item level:|^level req:|^quality:|^sockets:|^corrupted|^requires:/i.test(x));
+  if(clean.length<2)throw new Error('Не распознались название и базовый тип. Нужен скриншот всей подсказки предмета крупнее.');
   const name=clean[0].replace(/[^A-Za-z0-9' -]/g,'').trim()||'Screenshot Item';
-  const base=clean[1]||'Unknown Base';
-  const mods=clean.slice(2);
-  const id='screen_'+Date.now();window.pobItems=window.pobItems||{};window.pobItems[id]=['Rarity: '+rarity,name,base,...mods].join('\n');
-  window.importedItems=window.importedItems||[];window.importedItems.push(id);
+  const base=clean[1];
+  const id='screen_'+Date.now();
+  window.pobItems=window.pobItems||{};
+  window.pobItems[id]=['Rarity: '+rarity,name,base,...clean.slice(2)].join('\n');
   const slot=Object.keys(slotNames).find(k=>isCompatibleSlot(k,window.pobItems[id]));
-  status.textContent='Предмет добавлен: '+name+(slot?' · '+slotNames[slot]:' · тип не определён, проверь базовый тип');
+  if(!slot)throw new Error('Предмет распознан, но тип не определён. Базовый тип: '+base);
+  status.textContent='Добавлен в список «'+slotNames[slot]+'»: '+name+'. Нажми «Загрузить» в этой карточке, чтобы подставить его.';
   imagePicker.value='';
  }catch(err){status.textContent='Ошибка распознавания: '+err.message;alert(err.message)}
 });
