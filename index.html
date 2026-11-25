@@ -297,7 +297,8 @@ document.getElementById('closeItemModal').addEventListener('click',()=>document.
 document.getElementById('itemModal').addEventListener('click',e=>{if(e.target.id==='itemModal')e.currentTarget.classList.remove('open')});
 document.getElementById('gear').addEventListener('click',e=>{
  const card=e.target.closest('.item');if(!card)return;const slot=card.dataset.slot;
- if(e.target.closest('.show-item')){openItemDescription(slot);return}\n if(e.target.closest('[data-add-screenshot]')){window.pendingScreenshotSlot=slot;document.getElementById('imageFile')?.click();return}
+ if(e.target.closest('.show-item')){openItemDescription(slot);return}
+ if(e.target.closest('[data-add-screenshot]')){window.pendingScreenshotSlot=slot;document.getElementById('imageFile')?.click();return}
  if(e.target.closest('.load-item')){
   const menu=card.querySelector('.item-menu');document.querySelectorAll('.item-menu.open').forEach(x=>{if(x!==menu)x.classList.remove('open')});
   if(menu.classList.contains('open')){menu.classList.remove('open');return}
