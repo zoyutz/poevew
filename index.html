@@ -322,7 +322,7 @@ imagePicker.addEventListener('change',async e=>{
  const status=document.getElementById('status');
  status.textContent='Отправляю скриншот на распознавание OpenAI…';
  try{
-  if(!/^image\\/(png|jpeg|webp)$/.test(file.type))throw new Error('Выбери скриншот в формате PNG, JPG или WebP.');
+  if(!/^image\/(png|jpeg|webp)$/.test(file.type))throw new Error('Выбери скриншот в формате PNG, JPG или WebP.');
   if(file.size>8*1024*1024)throw new Error('Файл больше 8 МБ. Выбери скриншот поменьше.');
   const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(new Error('Не удалось прочитать изображение'));reader.readAsDataURL(file)});
   const response=await fetch('https://poe-item-vision-api.onrender.com/api/recognize-item',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:dataUrl})});
