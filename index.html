@@ -18,7 +18,42 @@ button,.upload{border:1px solid #756044;background:linear-gradient(#3b3328,#2925
 .resrow{display:grid;grid-template-columns:75px 1fr 45px;gap:12px;align-items:center;margin:11px 0}.bar{height:10px;background:#303943;border-radius:20px;overflow:hidden}.fill{height:100%;border-radius:20px}.fire{background:#d56b56}.cold{background:#67aee1}.light{background:#d8c05e}.chaos{background:#ad7bd0}.resval{text-align:right;font-weight:750;font-variant-numeric:tabular-nums}
 .footer{color:#74808d;font-size:11px;text-align:center;padding:12px}
 @media(max-width:850px){.gear{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:650px){.gear{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.item{min-height:118px;padding:10px 8px}.upload-area{align-items:flex-start}.upload-actions{flex-wrap:wrap}.hint{text-align:left}body{padding:12px}.stats{grid-template-columns:repeat(2,1fr)}.gear{grid-template-columns:repeat(2,1fr)}.top{align-items:flex-start;flex-direction:column}.attr .num{font-size:25px}.section{padding:12px}}
-.gear-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.gear-head .sectitle{margin:0}.optimize-btn{border-color:#9b7b4d;background:linear-gradient(135deg,#70552f,#3c3022);color:#ffe2ad;letter-spacing:1px;font-size:12px;padding:10px 20px;box-shadow:0 4px 14px #0005}.optimize-btn:active{transform:translateY(1px)}.optimizer-result{display:none;margin:12px 0 14px;padding:10px 12px;border:1px solid #55745d;border-radius:8px;background:#1d2b25;color:#cce8d2;font-size:12px;line-height:1.7}.optimizer-result.visible{display:block}@media(max-width:650px){.gear-head{align-items:flex-start;flex-wrap:wrap}.gear-head .sectitle{flex:1 1 100%}.optimize-btn{width:100%;padding:13px;font-size:13px}}</style></head><body><div class="wrap">
+.gear-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.gear-head .sectitle{margin:0}.optimize-btn{border-color:#9b7b4d;background:linear-gradient(135deg,#70552f,#3c3022);color:#ffe2ad;letter-spacing:1px;font-size:12px;padding:10px 20px;box-shadow:0 4px 14px #0005}.optimize-btn:active{transform:translateY(1px)}.optimizer-result{display:none;margin:12px 0 14px;padding:10px 12px;border:1px solid #55745d;border-radius:8px;background:#1d2b25;color:#cce8d2;font-size:12px;line-height:1.7}.optimizer-result.visible{display:block}@media(max-width:650px){.gear-head{align-items:flex-start;flex-wrap:wrap}.gear-head .sectitle{flex:1 1 100%}.optimize-btn{width:100%;padding:13px;font-size:13px}}
+/* Windows 95 visual skin — layout and component dimensions intentionally preserved */
+:root{--bg:#c0c0c0;--panel:#c0c0c0;--panel2:#d4d0c8;--line:#808080;--text:#111;--muted:#404040;--gold:#000080;--red:#800000;--blue:#000080;--green:#006400;--purple:#800080}
+body{background:#008080;color:#111;font-family:Tahoma,"MS Sans Serif",Arial,sans-serif}
+.section{background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;border-radius:0;box-shadow:1px 1px 0 #000;margin:13px 0}
+.sectitle{color:#fff;background:linear-gradient(90deg,#000080,#1084d0);letter-spacing:.5px;text-shadow:1px 1px #000}
+.attr,.stat,.item{background:#d4d0c8;color:#111;border:2px solid;border-color:#fff #404040 #404040 #fff;border-radius:0;box-shadow:1px 1px 0 #808080}
+.attr .name,.stat label,.slot{color:#333}
+.attr .num{ text-shadow:1px 1px #fff}
+.str{color:#805000}.dex{color:#006000}.int{color:#000080}
+button,.upload{background:#c0c0c0;color:#111;border:2px solid;border-color:#fff #404040 #404040 #fff;border-radius:0;box-shadow:1px 1px 0 #000;font-family:Tahoma,"MS Sans Serif",Arial,sans-serif;font-weight:400}
+button:active,.upload:active{border-color:#404040 #fff #fff #404040;box-shadow:none}
+.clear-btn,.optimize-btn,.item-actions .load-item,.modal-close{background:#c0c0c0;color:#111;border-color:#fff #404040 #404040 #fff;box-shadow:1px 1px 0 #000}
+.status{color:#006400}
+.hint,.footer{color:#404040}
+.item:hover{background:#e4e4e4;border-color:#000080}
+.glyph{color:#000080}
+.rarity-unique{color:#805000}.rarity-rare{color:#746000}.rarity-magic{color:#000080}.rarity-normal{color:#222}
+.item-menu{background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;border-radius:0;box-shadow:2px 2px 0 #000}
+.item-menu button{background:#d4d0c8;color:#111;border:2px solid;border-color:#fff #404040 #404040 #fff;border-radius:0}
+.item-menu button:hover{border-color:#000080}
+.item-menu .menu-title,.item-menu .menu-caption{color:#000080}
+.item-menu button.equipped-choice{background:#d4d0c8;color:#111;border-color:#fff #404040 #404040 #fff;border-radius:0}
+.item-menu button.add-text-item{background:#c0c0c0;color:#111;border:2px dashed #808080;border-radius:0}
+.item-menu button small{color:#404040}
+.modal-backdrop{background:#0008;backdrop-filter:none}
+.item-modal{background:#c0c0c0;color:#111;border:2px solid;border-color:#fff #404040 #404040 #fff;border-radius:0;box-shadow:3px 3px 0 #000}
+.modal-title{color:#fff;background:#000080;text-shadow:1px 1px #000}
+.modal-sub,.modal-group{color:#404040}
+.modal-stat,.modal-stat.primary{background:#d4d0c8;color:#111;border:1px solid #808080;border-radius:0}
+.bar{background:#808080;border-radius:0;border:1px inset #fff}
+.fill{border-radius:0}
+.resval{color:#111}
+.optimizer-result{background:#d4d0c8;color:#111;border:2px solid;border-color:#fff #404040 #404040 #fff;border-radius:0}
+
+</style></head><body><div class="wrap">
 <header class="top"><div><div class="brand">EXILE <span style="color:var(--gold)">/</span> CHARACTER</div><div class="sub">PATH OF EXILE · BUILD OVERVIEW <span id="charInfo"> · Ведьма / Некромант · Уровень 91</span></div></div><div class="upload-area"><div class="upload-actions"><label class="upload" for="file">＋ ВЫБРАТЬ ФАЙЛ PoB</label><button type="button" class="clear-btn" id="clearBuild" onclick="return window.clearBuildView()">ОЧИСТИТЬ</button></div><input id="file" type="file" accept=".txt,.xml,.code,text/plain,application/xml"><div id="status" class="status">Исходный билд уже отображён</div><div class="hint">На iPhone открой HTML именно в Safari, не в окне предпросмотра.</div></div></header>
 <section class="section"><div class="sectitle">Атрибуты персонажа</div><div class="attrs">
 <div class="attr"><div class="num str" id="Str">230</div><div class="name str">СИЛА</div></div>
