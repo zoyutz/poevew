@@ -5,21 +5,21 @@
 :root{--bg:#101318;--panel:#191e25;--panel2:#222a33;--line:#343d48;--text:#e7e9ec;--muted:#9aa5b1;--gold:#c9a66b;--red:#d66d5d;--blue:#69aee0;--green:#75c58c;--purple:#b18bd5}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#29313b 0,#101318 55%);color:var(--text);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif;padding:22px}
 .wrap{max-width:1050px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:18px}.brand{font-weight:800;letter-spacing:2px;font-size:18px}.sub{color:var(--muted);font-size:11px;letter-spacing:1.5px;margin-top:3px}
-button,.upload{border:1px solid #756044;background:linear-gradient(#3b3328,#29251f);color:#f1d9b2;padding:10px 15px;border-radius:7px;cursor:pointer;font-weight:650}.upload-area{display:flex;flex-direction:column;align-items:flex-end;gap:7px}.upload-actions{display:flex;gap:8px;align-items:center}.clear-btn{border-color:#59616b;background:linear-gradient(#343b44,#252b33);color:#d9dee4}.upload-area input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;z-index:-1}#imageFile{position:fixed;left:0;bottom:0;width:2px;height:2px;opacity:.01;z-index:1}.hint{font-size:10px;color:#8995a1;max-width:230px;text-align:right}.status{color:var(--green);font-size:12px;margin-left:10px}
+button,.upload{border:1px solid #756044;background:linear-gradient(#3b3328,#29251f);color:#f1d9b2;padding:10px 15px;border-radius:7px;cursor:pointer;font-weight:650}.upload-area{display:flex;flex-direction:column;align-items:flex-end;gap:7px}.upload-actions{display:flex;gap:8px;align-items:center}.clear-btn{border-color:#59616b;background:linear-gradient(#343b44,#252b33);color:#d9dee4}.upload-area input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;z-index:-1}.hint{font-size:10px;color:#8995a1;max-width:230px;text-align:right}.status{color:var(--green);font-size:12px;margin-left:10px}
 .section{background:linear-gradient(145deg,#1b2129,#151a20);border:1px solid var(--line);border-radius:12px;padding:16px;margin:13px 0;box-shadow:0 8px 24px #0003}.sectitle{font-size:12px;color:var(--gold);letter-spacing:1.6px;font-weight:800;text-transform:uppercase;margin-bottom:13px}
 .attrs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.attr{background:linear-gradient(145deg,#2a3038,#20262e);border:1px solid #3b434d;border-radius:10px;text-align:center;padding:14px}.attr .num{font-size:30px;font-weight:750;font-variant-numeric:tabular-nums}.attr .name{font-size:11px;letter-spacing:1.8px;font-weight:800}.str{color:#e5b45e}.dex{color:#76c995}.int{color:#77b5e7}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.stat{background:#222932;border:1px solid #333d48;border-radius:8px;padding:11px}.stat label{display:block;color:var(--muted);font-size:11px}.stat b{font-size:21px;font-variant-numeric:tabular-nums}
 .gear{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.item{position:relative;min-height:118px;background:linear-gradient(145deg,#252c35,#1a2027);border:1px solid #414a55;border-radius:9px;padding:10px;text-align:center;cursor:default;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px}.item:hover{border-color:var(--gold);background:#303640}.glyph{font-size:23px;color:#c5a16b}.slot{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}.iname{font-size:12px;font-weight:750;overflow-wrap:anywhere;min-height:24px;display:flex;align-items:center;justify-content:center}.rarity-unique{color:#d8a35b}.rarity-rare{color:#e4d26d}.rarity-magic{color:#8eb7e8}.rarity-normal{color:#ddd}
 .item-actions{display:flex;gap:5px;width:100%;margin-top:auto}.item-actions button{flex:1;min-width:0;padding:6px 4px;font-size:10px;border-radius:6px}.item-actions .load-item{border-color:#4e6376;background:linear-gradient(#293b4b,#202c38);color:#c8e3f7}.item-menu{display:none;position:absolute;z-index:30;top:calc(100% + 5px);left:4px;right:4px;max-height:220px;overflow:auto;background:#111820;border:1px solid #8a714e;border-radius:8px;padding:6px;box-shadow:0 12px 30px #000b;text-align:left}.item-menu.open{display:block}.item-menu button{display:block;width:100%;text-align:left;margin:2px 0;padding:8px 9px;background:#202832;border:1px solid #35414d;color:#e4e8ed;font-size:11px}.item-menu button:hover{border-color:var(--gold)}.item-menu .empty-choice{color:#aab4be;font-style:italic}
 .item-menu .menu-title,.item-menu .menu-caption{padding:6px 8px;color:#c9a66b;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
-.item-menu button.equipped-choice,.item-menu button.add-screenshot{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;padding:9px;margin:3px 0;border-radius:7px;background:#26352d;border:1px solid #55745d;color:#e7e9ec}
-.item-menu button.add-screenshot{display:block;text-align:center;background:#29251f;border:1px dashed #8a714e;color:#f1d9b2}
+.item-menu button.equipped-choice,.item-menu button.add-text-item{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;padding:9px;margin:3px 0;border-radius:7px;background:#26352d;border:1px solid #55745d;color:#e7e9ec}
+.item-menu button.add-text-item{display:block;text-align:center;background:#29251f;border:1px dashed #8a714e;color:#f1d9b2}
 .item-menu button small{font-size:10px;color:#9aa5b1;font-weight:400}.modal-backdrop{display:none;position:fixed;inset:0;z-index:100;background:#05080dcc;backdrop-filter:blur(7px);padding:18px;align-items:center;justify-content:center}.modal-backdrop.open{display:flex}.item-modal{width:min(520px,100%);max-height:85vh;overflow:auto;background:linear-gradient(150deg,#252d37,#141a21);border:1px solid #92764e;border-radius:14px;padding:20px;box-shadow:0 24px 70px #000c}.modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}.modal-title{font-size:18px;font-weight:800;color:var(--gold)}.modal-sub{font-size:11px;color:var(--muted);margin-top:3px}.modal-close{padding:6px 10px;background:#303943;border-color:#59636e;color:#e5e9ed}.modal-stats{display:grid;gap:7px}.modal-stat{padding:9px 11px;border:1px solid #394653;background:#1b242e;border-radius:7px;color:#e1e7ec;font-size:12px}.modal-stat.primary{border-color:#806747;color:#f0d5a8;background:#29251f}.modal-group{margin:14px 0 7px;color:#9eabb7;font-size:10px;letter-spacing:1.4px;text-transform:uppercase;font-weight:800}
 .resrow{display:grid;grid-template-columns:75px 1fr 45px;gap:12px;align-items:center;margin:11px 0}.bar{height:10px;background:#303943;border-radius:20px;overflow:hidden}.fill{height:100%;border-radius:20px}.fire{background:#d56b56}.cold{background:#67aee1}.light{background:#d8c05e}.chaos{background:#ad7bd0}.resval{text-align:right;font-weight:750;font-variant-numeric:tabular-nums}
 .footer{color:#74808d;font-size:11px;text-align:center;padding:12px}
 @media(max-width:850px){.gear{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:650px){.gear{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.item{min-height:118px;padding:10px 8px}.upload-area{align-items:flex-start}.upload-actions{flex-wrap:wrap}.hint{text-align:left}body{padding:12px}.stats{grid-template-columns:repeat(2,1fr)}.gear{grid-template-columns:repeat(2,1fr)}.top{align-items:flex-start;flex-direction:column}.attr .num{font-size:25px}.section{padding:12px}}
-</style><script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script></head><body><div class="wrap">
-<header class="top"><div><div class="brand">EXILE <span style="color:var(--gold)">/</span> CHARACTER</div><div class="sub">PATH OF EXILE · BUILD OVERVIEW <span id="charInfo"> · Ведьма / Некромант · Уровень 91</span></div></div><div class="upload-area"><div class="upload-actions"><label class="upload" for="file">＋ ВЫБРАТЬ ФАЙЛ PoB</label><button type="button" class="clear-btn" id="clearBuild" onclick="return window.clearBuildView()">ОЧИСТИТЬ</button></div><input id="file" type="file" accept=".txt,.xml,.code,text/plain,application/xml"><input id="imageFile" type="file" accept="image/*" aria-label="Выбрать скриншот предмета"><div id="status" class="status">Исходный билд уже отображён</div><div class="hint">На iPhone открой HTML именно в Safari, не в окне предпросмотра.</div></div></header>
+</style></head><body><div class="wrap">
+<header class="top"><div><div class="brand">EXILE <span style="color:var(--gold)">/</span> CHARACTER</div><div class="sub">PATH OF EXILE · BUILD OVERVIEW <span id="charInfo"> · Ведьма / Некромант · Уровень 91</span></div></div><div class="upload-area"><div class="upload-actions"><label class="upload" for="file">＋ ВЫБРАТЬ ФАЙЛ PoB</label><button type="button" class="clear-btn" id="clearBuild" onclick="return window.clearBuildView()">ОЧИСТИТЬ</button></div><input id="file" type="file" accept=".txt,.xml,.code,text/plain,application/xml"><div id="status" class="status">Исходный билд уже отображён</div><div class="hint">На iPhone открой HTML именно в Safari, не в окне предпросмотра.</div></div></header>
 <section class="section"><div class="sectitle">Атрибуты персонажа</div><div class="attrs">
 <div class="attr"><div class="num str" id="Str">230</div><div class="name str">СИЛА</div></div>
 <div class="attr"><div class="num dex" id="Dex">143</div><div class="name dex">ЛОВКОСТЬ</div></div>
@@ -298,7 +298,7 @@ document.getElementById('itemModal').addEventListener('click',e=>{if(e.target.id
 document.getElementById('gear').addEventListener('click',e=>{
  const card=e.target.closest('.item');if(!card)return;const slot=card.dataset.slot;
  if(e.target.closest('.show-item')){openItemDescription(slot);return}
- if(e.target.closest('[data-add-screenshot]')){window.pendingScreenshotSlot=slot;document.getElementById('imageFile')?.click();return}
+ if(e.target.closest('[data-add-text-item]')){openTextImport(slot);return}
  if(e.target.closest('.load-item')){
   const menu=card.querySelector('.item-menu');document.querySelectorAll('.item-menu.open').forEach(x=>{if(x!==menu)x.classList.remove('open')});
   if(menu.classList.contains('open')){menu.classList.remove('open');return}
@@ -310,42 +310,45 @@ document.getElementById('gear').addEventListener('click',e=>{
   const candidates=Object.entries(window.pobItems||{}).filter(([id,txt])=>id!==currentId&&gearSlotMatches(slot,txt));
   const imported=new Set(window.importedItems||[]);
   const options=candidates.map(([id,txt])=>'<button type="button" data-item-id="'+esc(id)+'"><b>'+esc(nameOf(txt))+'</b><small>'+(imported.has(id)?'Добавленный предмет':'Предмет из PoB')+'</small></button>').join('');
-  menu.innerHTML='<div class="menu-title">'+esc(slotNames[slot])+'</div><button type="button" class="empty-choice" data-item-id=""><b>Пусто</b><small>Оставить слот свободным</small></button>'+current+(options?'<div class="menu-caption">Другие предметы этого типа</div>'+options:'')+'<button type="button" class="add-screenshot" data-add-screenshot="1">＋ Добавить скриншот предмета</button>';menu.classList.add('open');return;
+  menu.innerHTML='<div class="menu-title">'+esc(slotNames[slot])+'</div><button type="button" class="empty-choice" data-item-id=""><b>Пусто</b><small>Оставить слот свободным</small></button>'+current+(options?'<div class="menu-caption">Другие предметы этого типа</div>'+options:'')+'<button type="button" class="add-text-item" data-add-text-item="1">＋ Вставить текст предмета</button>';menu.classList.add('open');return;
  }
  const choice=e.target.closest('.item-menu button');if(choice){window.slotMap[slot]=choice.dataset.itemId||'';window.renderGear();refreshCalculatedStats()}
 });
 document.addEventListener('click',e=>{if(!e.target.closest('.item'))document.querySelectorAll('.item-menu.open').forEach(x=>x.classList.remove('open'))});
 
-const imagePicker=document.getElementById('imageFile');
-imagePicker.addEventListener('change',async e=>{
- const file=e.target.files&&e.target.files[0];if(!file)return;
+function openTextImport(slot){
+ window.pendingTextSlot=slot;
+ document.getElementById('modalItemName').textContent='Импорт предмета';
+ document.getElementById('modalItemBase').textContent='Вставь скопированный в Path of Exile текст · '+slotNames[slot];
+ document.getElementById('modalItemContent').innerHTML='<div class="modal-group">Текст предмета</div><textarea id="itemTextInput" rows="12" placeholder="Rarity: Rare&#10;Название предмета&#10;Базовый тип&#10;--------&#10;Item Level: 85&#10;+ to maximum Life&#10;..." style="width:100%;resize:vertical;background:#111820;color:#e7e9ec;border:1px solid #536170;border-radius:8px;padding:12px;font:12px/1.5 ui-monospace,monospace"></textarea><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><button type="button" class="clear-btn" id="cancelTextImport">Отмена</button><button type="button" id="saveTextImport">Добавить предмет</button></div>';
+ document.getElementById('itemModal').classList.add('open');
+ document.getElementById('itemTextInput').focus();
+}
+document.getElementById('modalItemContent').addEventListener('click',e=>{
+ if(e.target.id==='cancelTextImport'){document.getElementById('itemModal').classList.remove('open');return}
+ if(e.target.id!=='saveTextImport')return;
+ const slot=window.pendingTextSlot;
+ const txt=(document.getElementById('itemTextInput')?.value||'').replace(/\r/g,'').trim();
+ if(!txt){alert('Вставь текст предмета.');return}
+ const lines=txt.split(/\n/).map(x=>x.trim()).filter(Boolean);
+ if(!/^Rarity:\s*(Normal|Magic|Rare|Unique|обычный|магический|редкий|уникальный)/i.test(lines[0])||lines.length<3){
+  alert('Не удалось распознать формат. Скопируй предмет целиком из игры, начиная со строки Rarity.');return;
+ }
+ if(!gearSlotMatches(slot,txt)){
+  alert('Этот предмет не подходит для слота «'+slotNames[slot]+'». Проверь базовый тип предмета.');return;
+ }
+ const id='imported_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+ window.pobItems=window.pobItems||{};
+ window.pobItems[id]=txt;
+ window.importedItems=window.importedItems||[];
+ window.importedItems.push(id);
+ document.getElementById('itemModal').classList.remove('open');
+ window.pendingTextSlot=null;
  const status=document.getElementById('status');
- status.textContent='Отправляю скриншот на распознавание OpenAI…';
- try{
-  if(!/^image\/(png|jpeg|webp)$/.test(file.type))throw new Error('Выбери скриншот в формате PNG, JPG или WebP.');
-  if(file.size>8*1024*1024)throw new Error('Файл больше 8 МБ. Выбери скриншот поменьше.');
-  const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(new Error('Не удалось прочитать изображение'));reader.readAsDataURL(file)});
-  const response=await fetch('https://poe-item-vision-api.onrender.com/api/recognize-item',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:dataUrl})});
-  const payload=await response.json();
-  if(!response.ok)throw new Error(payload.error||'Ошибка распознавания');
-  const item=payload.item||{};
-  if(!item.name||!item.baseType)throw new Error('Модель не смогла определить название и базовый тип.');
-  const rarity=['UNIQUE','RARE','MAGIC','NORMAL'].includes(item.rarity)?item.rarity:'RARE';
-  const mods=Array.isArray(item.mods)?item.mods.filter(Boolean):[];
-  const lines=['Rarity: '+rarity,item.name,item.baseType];
-  if(Number.isFinite(item.requiredLevel))lines.push('Requires Level: '+item.requiredLevel);
-  lines.push(...mods);
-  const txt=lines.join('\\n');
-  const slot=window.pendingScreenshotSlot||Object.keys(slotNames).find(k=>gearSlotMatches(k,txt));
-  if(!slot||!gearSlotMatches(slot,txt))throw new Error('Распознан «'+item.name+'» ('+item.baseType+'), но тип не подходит для выбранного слота.');
-  const id='vision_'+Date.now();
-  window.pobItems=window.pobItems||{};window.pobItems[id]=txt;
-  window.importedItems=window.importedItems||[];window.importedItems.push(id);
-  status.textContent='Распознано: '+item.name+' · '+item.baseType+'. Добавлено в список '+slotNames[slot]+'.';
-  window.pendingScreenshotSlot=null;imagePicker.value='';
-  const card=document.querySelector('.item[data-slot="'+slot+'"]');
-  if(card){const menu=card.querySelector('.item-menu');if(menu){menu.classList.remove('open');const load=card.querySelector('.load-item');if(load)load.click();}}
- }catch(err){status.textContent='Ошибка распознавания: '+err.message;alert(err.message);window.pendingScreenshotSlot=null;imagePicker.value=''}
+ const itemName=lines[1]||lines[2]||'Предмет';
+ status.textContent='Добавлен в инвентарь: '+itemName+' · '+slotNames[slot]+'. Предмет не надет.';
+ const card=document.querySelector('.item[data-slot="'+slot+'"]');
+ if(card){const load=card.querySelector('.load-item');if(load)load.click()}
 });
 const picker=document.getElementById('file');
 
