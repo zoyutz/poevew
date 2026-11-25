@@ -403,11 +403,12 @@ function planTradeResists(){
  const deficits=[
   {key:'FireResist',label:'Огонь',trade:'Fire',amount:Math.max(0,Math.ceil(75-totals.FireResist))},
   {key:'ColdResist',label:'Холод',trade:'Cold',amount:Math.max(0,Math.ceil(75-totals.ColdResist))},
-  {key:'LightningResist',label:'Молния',trade:'Lightning',amount:Math.max(0,Math.ceil(75-totals.LightningResist))}
+  {key:'LightningResist',label:'Молния',trade:'Lightning',amount:Math.max(0,Math.ceil(75-totals.LightningResist))},
+  {key:'ChaosResist',label:'Хаос',trade:'Chaos',amount:Math.max(0,Math.ceil(75-totals.ChaosResist))}
  ];
  const modal=document.getElementById('itemModal'),title=document.getElementById('modalItemName'),subtitle=document.getElementById('modalItemBase'),content=document.getElementById('modalItemContent');
  title.textContent='Подбор сопротивлений для Trade';
- subtitle.textContent='Распределение дефицита между снятыми предметами · цель: 75% стихийных сопротивлений';
+ subtitle.textContent='Распределение дефицита между снятыми предметами · цель: 75% всех сопротивлений, включая хаос';
  if(!free.length){content.innerHTML='<div class="modal-stat primary">Сначала сними предметы, для которых нужно подобрать замену. Учитываются только слоты, в которых изначально был надет предмет.</div>';modal.classList.add('open');return}
  if(deficits.every(x=>x.amount===0)){content.innerHTML='<div class="modal-stat primary">Стихийные сопротивления уже закрыты: огонь '+fmt(totals.FireResist)+'%, холод '+fmt(totals.ColdResist)+'%, молния '+fmt(totals.LightningResist)+'%.</div><div class="modal-stat">Хаос: '+fmt(totals.ChaosResist)+'%. Распределять обязательные резисты не требуется.</div>';modal.classList.add('open');return}
  const split=(amount,count,index)=>Math.floor(amount/count)+(index<amount%count?1:0);
@@ -418,7 +419,7 @@ function planTradeResists(){
   return '<div class="trade-resist-card"><div class="trade-resist-head"><b>'+slotNames[slot]+'</b><button type="button" class="trade-copy-btn" data-copy-trade="'+encodeURIComponent(tradeText)+'">Копировать для Trade</button></div>'+labels+'</div>';
  }).join('');
  const summary=deficits.map(d=>'<div class="trade-deficit"><span>'+d.label+'</span><b>'+fmt(totals[d.key])+'% → 75% <small>(не хватает '+d.amount+')</small></b></div>').join('');
- content.innerHTML='<div class="modal-group">Текущие сопротивления после снятия предметов</div>'+summary+'<div class="modal-stat primary">Дефицит разделён между '+free.length+' свободными слотами. Разница между предметами — не более 1% для каждого типа сопротивления.</div><div class="modal-group">Требования к каждому предмету</div>'+rows+'<div class="modal-stat">Хаос сейчас: '+fmt(totals.ChaosResist)+'%. Он показан отдельно и не включён в обязательное распределение.</div>';
+ content.innerHTML='<div class="modal-group">Текущие сопротивления после снятия предметов</div>'+summary+'<div class="modal-stat primary">Дефицит всех четырёх сопротивлений, включая хаос, разделён между '+free.length+' свободными слотами. Разница между предметами — не более 1% для каждого типа сопротивления.</div><div class="modal-group">Требования к каждому предмету</div>'+rows+'<div class="modal-stat">Хаос включён в распределение наравне с огнём, холодом и молнией. Цель — 75% по каждому типу.</div>';
  modal.classList.add('open');
 }
 function optimizeGearForResists(){
