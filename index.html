@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Exile — Character Viewer</title>
+<style>
+:root{--bg:#101318;--panel:#191e25;--panel2:#222a33;--line:#343d48;--text:#e7e9ec;--muted:#9aa5b1;--gold:#c9a66b;--red:#d66d5d;--blue:#69aee0;--green:#75c58c;--purple:#b18bd5}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#29313b 0,#101318 55%);color:var(--text);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif;padding:22px}
+.wrap{max-width:1050px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:18px}.brand{font-weight:800;letter-spacing:2px;font-size:18px}.sub{color:var(--muted);font-size:11px;letter-spacing:1.5px;margin-top:3px}
+button,.upload{border:1px solid #756044;background:linear-gradient(#3b3328,#29251f);color:#f1d9b2;padding:10px 15px;border-radius:7px;cursor:pointer;font-weight:650}.upload-area{display:flex;flex-direction:column;align-items:flex-end;gap:7px}.upload-actions{display:flex;gap:8px;align-items:center}.clear-btn{border-color:#59616b;background:linear-gradient(#343b44,#252b33);color:#d9dee4}.upload-area input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;z-index:-1}.hint{font-size:10px;color:#8995a1;max-width:230px;text-align:right}.status{color:var(--green);font-size:12px;margin-left:10px}
+.section{background:linear-gradient(145deg,#1b2129,#151a20);border:1px solid var(--line);border-radius:12px;padding:16px;margin:13px 0;box-shadow:0 8px 24px #0003}.sectitle{font-size:12px;color:var(--gold);letter-spacing:1.6px;font-weight:800;text-transform:uppercase;margin-bottom:13px}
+.attrs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.attr{background:linear-gradient(145deg,#2a3038,#20262e);border:1px solid #3b434d;border-radius:10px;text-align:center;padding:14px}.attr .num{font-size:30px;font-weight:750;font-variant-numeric:tabular-nums}.attr .name{font-size:11px;letter-spacing:1.8px;font-weight:800}.str{color:#e5b45e}.dex{color:#76c995}.int{color:#77b5e7}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.stat{background:#222932;border:1px solid #333d48;border-radius:8px;padding:11px}.stat label{display:block;color:var(--muted);font-size:11px}.stat b{font-size:21px;font-variant-numeric:tabular-nums}
+.gear{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.item{position:relative;min-height:105px;background:linear-gradient(145deg,#252c35,#1a2027);border:1px solid #414a55;border-radius:9px;padding:10px;text-align:center;cursor:default;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px}.item:hover{border-color:var(--gold);background:#303640}.glyph{font-size:25px;color:#c5a16b}.slot{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}.iname{font-size:12px;font-weight:700;overflow-wrap:anywhere}.rarity-unique{color:#d8a35b}.rarity-rare{color:#e4d26d}.rarity-magic{color:#8eb7e8}.rarity-normal{color:#ddd}
+.tooltip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);z-index:20;width:min(390px,90vw);white-space:pre-wrap;background:#10151c;border:1px solid #8a714e;border-radius:8px;padding:12px 14px;box-shadow:0 12px 35px #000b;color:#ddd;font:12px/1.5 ui-monospace,Consolas,monospace;pointer-events:none}.item:hover .tooltip,.item:focus .tooltip{display:block;left:12px;right:12px;top:auto;bottom:18px;max-width:calc(100vw - 24px);max-height:45vh;overflow:auto}
+.resrow{display:grid;grid-template-columns:75px 1fr 45px;gap:12px;align-items:center;margin:11px 0}.bar{height:10px;background:#303943;border-radius:20px;overflow:hidden}.fill{height:100%;border-radius:20px}.fire{background:#d56b56}.cold{background:#67aee1}.light{background:#d8c05e}.chaos{background:#ad7bd0}.resval{text-align:right;font-weight:750;font-variant-numeric:tabular-nums}
+.footer{color:#74808d;font-size:11px;text-align:center;padding:12px}
+@media(max-width:650px){.upload-area{align-items:flex-start}.upload-actions{flex-wrap:wrap}.hint{text-align:left}body{padding:12px}.stats{grid-template-columns:repeat(2,1fr)}.gear{grid-template-columns:repeat(2,1fr)}.top{align-items:flex-start;flex-direction:column}.attr .num{font-size:25px}.section{padding:12px}}
+</style></head><body><div class="wrap">
+<header class="top"><div><div class="brand">EXILE <span style="color:var(--gold)">/</span> CHARACTER</div><div class="sub">PATH OF EXILE · BUILD OVERVIEW <span id="charInfo"> · Ведьма / Некромант · Уровень 91</span></div></div><div class="upload-area"><div class="upload-actions"><label class="upload" for="file">＋ ВЫБРАТЬ ФАЙЛ PoB</label><button type="button" class="clear-btn" id="clearBuild" onclick="return window.clearBuildView()">ОЧИСТИТЬ</button></div><input id="file" type="file" accept=".txt,.xml,.code,text/plain,application/xml"><div id="status" class="status">Исходный билд уже отображён</div><div class="hint">На iPhone открой HTML именно в Safari, не в окне предпросмотра.</div></div></header>
+<section class="section"><div class="sectitle">Атрибуты персонажа</div><div class="attrs">
+<div class="attr"><div class="num str" id="Str">230</div><div class="name str">СИЛА</div></div>
+<div class="attr"><div class="num dex" id="Dex">143</div><div class="name dex">ЛОВКОСТЬ</div></div>
+<div class="attr"><div class="num int" id="Int">267</div><div class="name int">ИНТЕЛЛЕКТ</div></div></div></section>
+<section class="section"><div class="sectitle">Защитные характеристики</div><div class="stats" id="defenses"><div class="stat"><label>Здоровье</label><b>5 224</b></div><div class="stat"><label>Мана</label><b>924</b></div><div class="stat"><label>Энергетический щит</label><b>698</b></div><div class="stat"><label>Броня</label><b>2 195</b></div><div class="stat"><label>Уклонение</label><b>2 781</b></div><div class="stat"><label>Шанс блока атак</label><b>65%</b></div><div class="stat"><label>Шанс блока чар</label><b>54%</b></div></div></section>
+<section class="section"><div class="sectitle">Экипировка · наведите курсор или нажмите на предмет</div><div class="gear" id="gear"><div class="item" tabindex="0"><div class="glyph">♜</div><div class="slot">Шлем</div><div class="iname rarity-rare">Fate Visage</div><div class="tooltip">Rarity: RARE
+Fate Visage
+Sinner Tricorne
+Evasion: 653
+EvasionBasePercentile: 0.2539
+Unique ID: 8b057de0bd4da0e26c9bf167b6268eb1b4c8c9440a100335cc662f0e4190551c
+Searing Exarch Item
+Eater of Worlds Item
+Item Level: 84
+Quality: 20
+Sockets: W-W-W-G
+LevelReq: 64
+Implicits: 2
+18% increased Spell Damage
+Adds 11 to 22 Fire Damage to Spells
++267 to Accuracy Rating
+42% increased Evasion Rating
++129 to maximum Life
+Regenerate 54.3 Life per second
++1 to Level of all Minion Skill Gems
++33% to Chaos Resistance
+17% increased Stun and Block Recovery</div></div><div class="item" tabindex="0"><div class="glyph">◇</div><div class="slot">Амулет</div><div class="iname rarity-unique">Ashes of the Stars</div><div class="tooltip">Rarity: UNIQUE
+Ashes of the Stars
+Onyx Amulet
+Unique ID: e8700c9a289d11cf673dc58d7058a305bcc31bfff793090ed8ab4415287f7224
+Item Level: 87
+LevelReq: 60
+Implicits: 2
+{crafted}Allocates Death Attunement
++16 to all Attributes
+6% increased Experience Gain of Gems
++1 to Level of all Skill Gems
++27% to Quality of all Skill Gems</div></div><div class="item" tabindex="0"><div class="glyph">▣</div><div class="slot">Нагрудник</div><div class="iname rarity-unique">The Covenant</div><div class="tooltip">Rarity: UNIQUE
+The Covenant
+Spidersilk Robe
+Energy Shield: 361
+EnergyShieldBasePercentile: 0.2464
+Unique ID: a2fe99d492ea2d0a9ad059670df1192ba36c99716152be7b3d90851a2bcac21c
+Item Level: 83
+Quality: 0
+Sockets: B-R-G-R-B-B
+LevelReq: 49
+Implicits: 0
+Socketed Gems are Supported by Level 29 Added Chaos Damage Support
++29 to Intelligence
+244% increased Energy Shield
+10% increased maximum Life
+Skills gain a Base Life Cost equal to 100% of Base Mana Cost
+Corrupted</div></div><div class="item" tabindex="0"><div class="glyph">♧</div><div class="slot">Перчатки</div><div class="iname rarity-rare">Miracle Clutches</div><div class="tooltip">Rarity: RARE
+Miracle Clutches
+Vaal Gauntlets
+Armour: 317
+ArmourBasePercentile: 0.9461
+Unique ID: 5ef97fba5fea05e3e1bb97572d4b789a801559c51acec71771e84e9e12fc01da
+Searing Exarch Item
+Eater of Worlds Item
+Item Level: 78
+Quality: 20
+Sockets: W-W-W-B
+LevelReq: 63
+Implicits: 2
++5% chance to Suppress Spell Damage
+Minions deal 14% increased Damage
++50 to Dexterity
++126 to maximum Life
++45% to Fire Resistance
++43% to Cold Resistance
+{crafted}Minions deal 18% increased Damage</div></div><div class="item" tabindex="0"><div class="glyph">⌁</div><div class="slot">Ботинки</div><div class="iname rarity-rare">Spirit Span</div><div class="tooltip">Rarity: RARE
+Spirit Span
+Slink Boots
+Evasion: 641
+EvasionBasePercentile: 0.8706
+Unique ID: 8859f0dca566983713ae3dbcf99779c654a49d1e5e165d80c3d58d415d0a51f9
+Searing Exarch Item
+Eater of Worlds Item
+Item Level: 85
+Quality: 20
+Sockets: W-G-G-W
+LevelReq: 69
+Implicits: 2
+17% increased Cooldown Recovery Rate of Travel Skills
++7% to Chaos Resistance
++43 to Dexterity
+92% increased Evasion Rating
++121 to maximum Life
++48% to Fire Resistance
++48% to Lightning Resistance
+30% increased Movement Speed</div></div><div class="item" tabindex="0"><div class="glyph">⚔</div><div class="slot">Оружие</div><div class="iname rarity-rare">Damnation Cry</div><div class="tooltip">Rarity: RARE
+Damnation Cry
+Convening Wand
+Unique ID: 9d94b992e5c26f01ed458a0252b1acad80d4510ae13848eda0b0962bb662e47c
+Item Level: 79
+Quality: 20
+Sockets: W W W
+LevelReq: 50
+Implicits: 1
+Minions deal 24% increased Damage
+33% increased Spell Damage
+Adds 16 to 31 Physical Damage
+22% increased Cast Speed
++35% to Global Critical Strike Multiplier
++1 to Level of all Minion Skill Gems
+{crafted}Trigger a Socketed Spell when you Use a Skill, with a 8 second Cooldown
+{crafted}Spells Triggered this way have 150% more Cost</div></div><div class="item" tabindex="0"><div class="glyph">◈</div><div class="slot">Щит / второе оружие</div><div class="iname rarity-unique">Foulborn The Oppressor</div><div class="tooltip">Rarity: UNIQUE
+Foulborn The Oppressor
+Elegant Round Shield
+Armour: 533
+ArmourBasePercentile: 0.7273
+Evasion: 533
+EvasionBasePercentile: 0.7273
+Unique ID: 1525a4019dc3baaaea73d3b18fe0172e756d3e55b8d2aabd9dbe35410db3a7f8
+Item Level: 80
+Quality: 0
+Sockets: W-W-W
+LevelReq: 70
+Implicits: 1
+120% increased Block Recovery
++28% chance to Suppress Spell Damage
+225% increased Armour and Evasion
++11% Chance to Block
+You take 20% of Damage from Blocked Hits
+{mutated}15% chance to Avoid Damage of each Type from Hits</div></div><div class="item" tabindex="0"><div class="glyph">○</div><div class="slot">Кольцо 1</div><div class="iname rarity-rare">Carrion Twirl</div><div class="tooltip">Rarity: RARE
+Carrion Twirl
+Bone Ring
+Unique ID: 9b4fb7a7089230be4d7f2c44b9df7bf24eabdc55272166aff410202bdb2da877
+Item Level: 81
+LevelReq: 54
+Implicits: 1
+Minions have +14% to all Elemental Resistances
++41 to maximum Mana
++37% to Cold Resistance
++40% to Lightning Resistance
++24% to Chaos Resistance
+{crafted}+29 to maximum Energy Shield</div></div><div class="item" tabindex="0"><div class="glyph">○</div><div class="slot">Кольцо 2</div><div class="iname rarity-rare">Sol Loop</div><div class="tooltip">Rarity: RARE
+Sol Loop
+Sapphire Ring
+Unique ID: c62600f2a5d129c74abfb6142461e32acdf38cddf2c0aec40bf31ef11664d15f
+Item Level: 85
+LevelReq: 67
+Implicits: 1
++28% to Cold Resistance
+Adds 1 to 34 Lightning Damage to Attacks
++35% to Fire Resistance
++48% to Lightning Resistance
++21% to Chaos Resistance
+{crafted}+54 to maximum Life</div></div><div class="item" tabindex="0"><div class="glyph">▰</div><div class="slot">Пояс</div><div class="iname rarity-unique">Darkness Enthroned</div><div class="tooltip">Rarity: UNIQUE
+Darkness Enthroned
+Stygian Vise
+Unique ID: e188c76ba75ebae47c0f41fc042471358933d6a5a913c31a942d058775fe5a20
+Item Level: 85
+Sockets: A A
+Implicits: 1
+Has 1 Abyssal Socket
+Has 1 Abyssal Socket
+91% increased Effect of Socketed Abyss Jewels</div></div></div></section>
+<section class="section"><div class="sectitle">Сопротивления</div><div id="resists"><div class="resrow"><b>Огонь</b><div class="bar"><div class="fill fire" style="width:78.0%"></div></div><div class="resval">78%</div></div><div class="resrow"><b>Холод</b><div class="bar"><div class="fill cold" style="width:77.0%"></div></div><div class="resval">77%</div></div><div class="resrow"><b>Молния</b><div class="bar"><div class="fill light" style="width:77.0%"></div></div><div class="resval">77%</div></div><div class="resrow"><b>Хаос</b><div class="bar"><div class="fill chaos" style="width:49.0%"></div></div><div class="resval">49%</div></div></div></section>
+<div class="footer">Данные берутся из экспортированного кода Path of Building. Для расчётных характеристик файл должен содержать актуальные PlayerStat.</div>
+</div><script>
+const initialCode = 'eNrtfWtz2ziy6OfVr2C56twvcRziRYBzkz1ly49kxkk8lpOczJcUSIIWJxQpk5QdZWr_-22AlERKpEzFvuPZMztby8hAdxNo9Bsg-fK_v01i61ZleZQmr_bQgb1nqcRPgyi5frX34er0udj7738OXl7IYvw-PJpFse755-AfL81vS-a-SoJhLPP8nZyoV3vvlJ-lE5n4KtuzPJkEUQGNaaL2LH8sM-kXKjtXtyo-nBXp2zQAlFDGue5eEfkUFf54z4o13Ks9F-1ZExklo9T_qoqzLJ1NX-3xPWsqk2Ks0uSt_D3NztLg1d4ojWUW5bWuKKm6Dj1PZTCJPauQ2bUqPi6mTL7AlG8jdVcO5s3bi_eXV3sww3-8vIjlXGWjQhZWDhcg4hfRrQKigHkeTaICMGU8AzRs773owAHmymv1ugZ8H-zRLMuLYzmBn_fjjKZKBatxHDi0C3KYRcXbWVxE0zjSq1OhoAPBulBg1MOxXswVtN05kqu0kPHxxej-MZeQaQ-OgCSMj2KYYS-6GvrNdRIVqjf4RRrlabLTqHsBD2dxDJrSC_ZS5Sq7lUXUcyDDdOJFSU-ejJSMh2kaB-ldsoI-4Ggbwlv5bQlLOvkRTRQAavi8JoCoE-GtTOQwzVfLzu1toBcqA-NSNDDuQxgpPwV7tAuKvseOmOdRqBqQrrMNdKeJVAgtw8GMHFDa40Y7zuZk1BeunTAS9EBsRfqBQV2C8esHOUpncU_IYmX1MNmijjd1SERxF-Sx-lYDI1sINiBJJ7feJLXldvgWgnVIJEj3CG9TbVd6WreT1xdLSOoK2z4grosxRrhzLBfjeR75xmREk9kEPMaV_KpWN3Qp3iLr1-MiATPZhUyI43YaqtMoU52IzCZut_2Mgx-6I_jCNO_CRJQSsk07l5AMY7rFnfs_aeg3ib8izbbalw9JZjxILQ7YdguNcgmqqIMNL1a9cVa3qVS6T1BQ3uxaJdUd5yv5YugAbUM7V8ofn0HgdykL1c-cr6TuHg5r4DqH8VayLQxG3VLSxFjnFbYPHG67LjNXZxuRdr4h0W1tNdaObDtJVHY9H40jFa9m57iiD_xibEM57YNqOF_Hr68AsfvdsY0lvVB35MsnmQX93NSuY7qVed0iYy7Qdo6VCHVmdUurgmAZEAK1Hrd3WsOLLP1dQWIT74h3mE3SWc2hIpdtnUYJX59Ft6QsnEqZBF2qYOY3vBju1JuTMFQmSzuKIV1cm4zD7kWDocZxGy7rNCiHRSH9r8dpcL3OvG1JWxzvhNEc4Gg2nYKB0WKxRqDbBWl3CZlGVI-_xf3A70Gq6_qNtrrV9Rvw-4HXb3B_tND7JmsYG1Oxtzr6tdtQtwd078ks1_MtmI0JOAiTx79Nax7moNuHnUJ22Sv7M4A9U9aL9A4GP9blkXw36F7p4mmmku_z3vQb4L1ucJIEs0wrQ-97rGPUb9Ot7vcXgcrOzcLOWk2HU-ocEIiueRdes7hDD5zaf4-LtFG8IZRT9wDCaOpsx2kp42xAtpZxetyhvaDTA3GzrEOY6x5wyjjC7B6s5iohJGx-gBzmEr5tnJu3FK6AcToIIedeHtbxGIOA-gDZnNudeFvqSxuw99SXNmm31Jf6zKWR5AjM-TbA9qiJcHGAt6Ftj-I2UFqjW0IQ6oOwPbDbirp9mLpyFoP7PpaFtIIqRf8os0gmBQKJ21tvxKYxVzLzx-fgZl7t1f86lXHsQQgCrZr-yxemNq9_DWXs5-aWb5LprLASU16fRLn_xZuFoS55A6EiM9X-k9PTk-HVm48n1SjrKPnXKI6_JLOJpyvH5b96TCXkSJnwzPLTOJbTXAXLon6kq_IadwQT9sFS5DMvL6Ff7X2M1J3pPFaFjOK8FzXIuxcKWqdl6Kz6-lCCCN_PIu0n6oROvqmsAH4se_uQupB-sU5nMtUeUgUmYOtHxtjSjVmVU9JCqOWmH8tLF1AnVUapQ5kXRiT7UNEbBk0iuqXfVN5MpjJeW6OqrbfMXM2nSutX3sKUAvpySCuiMPJLmJ7Cs4iXG7zxfYgD_HkvGsaPNfHLpl6CYpxEE7tq68VV4wvXuFq29ZIv5ct5E7ts6oO8NGlNAsvmNNF7XH0oncTqMIp10Lu2su8q5wvqtwToQ_AtGLQyoF4j-L4Yq2zR04cSaEkWebNi3SrU2nvxynjCBpt0S6-5mDJWHdW09OJrw9k1jFG9p6dtXCNhWvqgLtKmOnLZ1nMJqrpCg_1lWy8mLMorjflXjb2UxJjbw9s0CjYtxXrngwmaUsMjjEvXEh5OZr240IviaSzzr2v6UrV1ohfZbAv2hyKKo2L-MCJa4x5GQSvewyhcRYlfzDLVi8DlRlBzuTWUWWEuE96Gr64afxR_mRz_MIUyhf9hdFNh6G3_j1WoYLBtDmDZ9TBapykEhhBumETqgbRGxSw5BvZuJ7Vi0D0z7GGQ-tMqPe9OTCuNSrUftmkvy46HE4K44HXfALST0rLy9lrJWKftafwwgusbgj2WoJOWzjZnU5kEC2rvdwn7u7mXFjkQNXnhsc5q8weNEsKJybxG5-WLRaL5cpgmYXRtScPh8o-RKnSqaO63bDE3KBubmeb6qa5Vfro43fViC1J13muFtDz3VWFdxNJX4zQOVFbhjvwU8uiRzo7yjdS2FWEMLnsHeKnzlOJ9eD5L9PjNPxdZWqhqT2NBQuxGooypSh--A4mKi6NZkvsyDtbnwbop-OXaaTKZjK-ia5UN05ne2uyBrLTILEK7BbyDXOHeg2OK64uMfznPxcbpdrRFKLpAW-wxdmNBy_q9MKaoB9qFqi0l6YGwPjh27-CyVfbal-MaZ31C93Kh2nUDk3Apkzomvw9zGXwv1cJenovpRNJ7TT_AdI22E9PrG2C9mW7OqtYEj94Hv9hy-oEZLXF3mtbGtljvuTV3WXcaalVgWgnGlnvpWqc63rBVaIvsTpbHVI2reS3jOL2DKUKMPVG9jO6KQhO5tHeXapLequBofhjH8x3p6Vq_qeuZepo2gCMVh_3mNV3utW_yg25hYR5dR_H70ETEcF8TKm8MejjLi3TyNg0gSFWZSSwtlegjPkuvXkRFrHTRJ5Qwn9L7_sMgv2jBNh77xdJll47e_KV_vplMISC21Df9z4XMivkyFoFMSFuq8rT3a5mPwdQrl3FqU1-5hLIg8ATHnuNS6TLpC9-l3PMCx3FL5HMlr3XBfAirBDGGabuEcG0CWcGwDDneFGqSV3GG_l1FGVY-Tu90QfA4gjgvMyHsYvazXJVHED8pOU0Tg5FEcRmZaBr1oOQSvGQx_8m6PLw8GXyM_CLN5tbIh1jCHw_OUln8H6CR_9_cep1myeBDEt3MlPXm-CeLIewiEhCJPEp92xa-b4ee73EiZegTEmJBuOsTLwxtQgXiDnewHygHOW7g-nxgRmLszk8Wsge_zmRsRmIPyhPw-U_Wp-efrE8DA3Opbn6ynAGsRhz5ke5Eg8MgyC1kFalFLW31rFLDdUNZjbYgGLTKinA-QPy_LMhTMyUh_rMWRqHCGSBc710am0U3q_fq6rJlTMPgmbm9GaGVhhboYDkSc3_LlHCtM1hBABQaclGCtS6lrr4bmQRhNA6oWhYr03_ow8tLDWtA4HshyL0Q9F4Idi-Eswnx8oVe1Kac4RY5O4vn07H1DhgYq61CFnCbk5DYzEEKY0cqTowQhQEOkAfChaVyke2w0HN9W0jbxV6AAkV56CGXol5CZvUUMtJDyNy6nJRCUElQQ_pK8IUMMUdTm5T5laXLMQNk18F1k2W26VSZS2vxUTsIn8v-9wvfGgTvJ56kRTxhxZKSzcNsPgBXANZZ24JPsNJ16QQ7Rj3XxYr52AltpALKQAYxwx6SvgyEDQ3IlgoRQYUKpO3ZroM9z3EwiKjfkE7urqQTbxFPZjfls9yfza0A_IaFaV1sKskjpFMoS-E24kfQhk3EuMvqEbCHgHMWpx6A6-jb4I0gG_2qrNXTN20iWg64Lp5_gLsJCxX86yqLriHdsqRVTn853LuxSqx5OrM-5Er3atx96w5CFPhLWLlxd9bi-Y8VwUpDK7pArhhHuXUn59ZY3ioLMVCzSQoqo0_W_-30YQ1C9NMY2tSYt4dnb4aDo0xBzLYw47_OIjCGUXwLa2nqxXrtIZy0zuR3WBBVVyJJQ4o5CmziSwH221YEuy5VPvVYoITAduAx4fqhhDDDI9gXGIy7j2yGQNe8oKFEgjSUqKY1uKk1Swn5oEV7KV4zI166pF6Oe6AVKtPnMrUClNVbawqzAsABbShblRNWttUKZrowY5VVuD9NbtrWizXX68O7N79-OBkc5mOYSrUsEEhm-eB9Mv9mHUIGoIr6AikBaY_vSizcACE_dDgJfCbANYOxA9fs-T5BEOWF3CW2a6tASIgIEcOChxxyrOYC8bqnbZgyvFoUSFdSHzxcbh0rCToO7nKWmOODYFCMtdKGZLVZOXAaK_ENVijSIbGlN2z1JKsQbMMW1X0k5samVfLTAvHvZB7aBMFpFYSrsbZ-4OEkcHc0jQL9xGj81bpMPTUoN1Stckf1J4s4aFDfYz0CflcH_yHXg6jqAFOHNrQbh8p1AwpOUuLAlq4MbOY63A5ChCBYk8TxXZcjB-TFU9wjgWsLhiT2fOlj5Hdqd81DHj2_fH4G_z96flQTLurWhWsBDuJxZhIqHSbNpjqngyZvXokFdi1wiaWup_ki1KsAQURcLSFvkgKMWHStJQwMRNMK1Bm2FsUtAjxtXgZGrnLrWguotDQjS7OjHZGlbmCa-lbIBgogiabfRIHGUQ3TLJtNYeT_9jLJW8IvEEL4Czy_TAajOEq-WkdpWuSDysKC3YDAvvpjUwLBWjl1CRSCuaEd-JJB2g0pKSJSkcDzQxA7yE8dRiUFw6aYQg6DkM0nARg3sF8grQyF7mCkZGnKv-mDaJYe-uAEjFOmF-ZTmsUQQpnGhqiyjmgOJPXseSPdcJtGsJmmLkIaa3E-z0T--s5XmdQSW8rR4FlpvEqxXZXMB88o0e3H6hsMGEYzcHG30wILiVE9FTGS-owKQ9ukFg3SZfsqV651kmb-Uh3-rsLH_8RZfVRDtKjGqV78j1Guo_NRlICx0bGtD1mzqqkHI93qgRlxG-rh2YwHCgIpCvmJwmCOvRA53HOwI5SHPGrKVtSWYIsIYb4PyUtoK4pcmzEw0D-mHrRLPfT_zurqQdfUQ9yTzBgBxrg9VwcT7vC2VJjeoxbuhlos03FlMXpASuutQ8MyGemX-TzTuVmb3jatgN5GN2WGstq5sAX_UaT7INx-qua2pTRgYJP8Wp8QSpeJzc8yUM2MZqQLz3WFsmnIQEccxaRyOKahq0IqHeIoiI5pwHwUSCW59EDTBIHcx7EdgmxI30MvhP_3y2eouDefWaQrIEOgl-EsjgcmHEZVzyrr0cHQa_C4EAbJxDJbEQMmVolPmcToGQ_HWnTTEq2Z4jC-QjjNlPoO2led_GhH-GsHJshuMb9DmWV6Pld3URYPjtIEHKI2EPWakEdDj0tuCxcT21M04CH2KfXcIOReiKmSHqRPDHOMHEeGIUU2trEXeDiQgjfL4gLVU1jaXvgxlYxniP7XIi86iY2zhQhyZVDA1FC0UWV8RqqwAYKMpmu3u137M0zbbdZSBp81zWUzJv7fX_FGbVsrh4kf6QjoMPMicI6Ds7HMi3huncyV9bO6U3FdiLyQCPC8kGI7gSsF9RjEo8zFKOBKMo971BYewdJ2XA8yqtAFIQowEozoWBZizzUbUhOitazoGdkM-HRRzDcb8MZT6jNXlqe0FJxm6XeVNCUPsTp0ecjb2JBI1xcSbVj-tDVvXQ28ZTUusiifbF8LQoNQYWFziIuUL0GDPUWka3si9IlLJKfK41QQWB9QZ48rzu0wQI7vuTbyAtks8rJOG67Xwt5Yiyar6f2sbpSDTezPLRkEkbbDulRby2ufdllIazXiWGZfE3C5MK1inIGBDQajYn4dgV-CsLfhaBUSwueOJzlTntT1dBuMaejbFFPI8phwCQkcyaSLiE-QdCkObAYmloXgm8GbruVryyD00DpsWtrXUu8AHXrzPNdFbgPX3uiiRhi59JvL4oOBL4Usf1r-01b-n6az2IN0wtJlofflAek0G4BLuZagL5fpDKLQypKXx5zAphBS_d5MNzjmZJWZaMjOzMSA1tYXMcwktZEb-MSTUgdNJCAeEqGyEceKMycgijFPBFiCU3UDUEymLaEHWhmK5vp2bjA3knG-trmCcCOPXQu_n2FRV8jFgfJmVoJxY--4ZJQJ5itOQKYAUjNckjE3GXyGeKmQX5WFywpQlcmEWTopIYCWPiQ6-GMyK6T2uk1DXJrtCgvwTRConzQqSRjUv4ErZm2R_YckiOKZVsfy0IzZ8A9rgb1-CGQtroNwXTkC-UT5VPjMdmwZQHSPbdcNIbYPFQpCoiQYGJsgykLpQaZsI6a3rUnAmlVwXk9_6-6Z4qZLoI3C9rIGpLPOQXm4J7eGsywv7b_elHicNW3lpdPiSN9GkEXHyhoCP_0xhJkfJVjDMzlLihg0bGkjCOKdNsKlDmqcLFGhy0NPgp0GfiqikOe5nHEcUI8LiIdsHQz5DElf-RxxjpSgylUIg_GH7OrHShJcbCtJ1CvLDmmWJJ6x-61Awy2jtl3aZ8xuVuqeIey0FONYRzGOtEbyy5i8OQDRMoD_nAaAKfM2ezEcQ4iVLw-pnAEliOHX6gBfo-RrXYppqCBkRI4-DxAoT7hUCZ9A9h9Sx8XCk0SpULiKe46wMRdShAR8HfYFt13ftfvVARz2I3UALLbsaoIg6Ye2l9k73GAyS_SWmHFOSmnTaBzYchtCe6Q0-PfK70WfbWyZFd-b63wRaxPcKPjAKvosYAEWAWI2k8AhJOxQ72iBk3B8SMywo7ezfF8qHzHIGJgQnhMgQj13LU7BD9vA9sBFTEAaxyZCGGDSvdCktcJjMHsWbP7M5XLbNorS2DpP0-lgJKfTsbGIa17bd7Bj2yGWLEDY9TmVXug5CDIEBylIoH1w2sIPghD7NqwNtSHzRirUb3-gsJjheo5QUzzeXA8TC7YY4NrxMbpxrNAEatXJscWZmp22WZ5hdF8thtENJ_I3OHS4Vr179_7y7eH5YDgrdFZZO2-oZONEF1UhBjlxVEBcaUskINADu808x5WUy4BgyhyPCGnboMWh54NVxxKDOLlUCq8pL5w0RaSZS1Rnp9bPXPVZm9YZo9YZn4MlB30vQy8d56qGfjgcBcijYJL8wOUOo7bvQ-zFbBkKD5SFCFsJAZbMCbFwMQINsYlPWeAjqghpVivZukqgRiGpTJ5Wr2FbHIJ86MTxtonrSF4li-UGNjROl4bcswNwuEp4TCEw2VLPGQubhh4NsLI9FUgC0w6UgNSTI9f2PB3rUw_LsDl7d23y5Mf0rnWKpHWKZyBJOqh9La8XExwV6QS8fMMEhoRQnTcH4Ig8Pwwcx0eIOgQJyFOEI3UOI8B9BUyGgQDz5wUEeTJU2iyG4Xr9qjHLljiyPJWn88vyYGz1ggPjdkyqYqWLPYYf5gdtcQafxlGuz_2AgRxpU7m9qieIJNyBKMwJXQqKK6TiPnHNSU0P4jblux64aebrI5t-yBl1mcDg3R2pVQJ3O4b1qt4foX4-QCvfWgxunAJy69W52p7lWnmf31Pdb9YJyY51QnM0HQbUVSg8XUyhTJv-Ov6jVTpYi3RcgCxCvpxEoIv6tNvg3GyBQdqaaxXarMATqRjWJSYkcSA4xHY8tIWAf6WDEaSn2BMQImARSpAIyEttYTsIQZKKbLCWgwblcsv3J0uGIQiG5vCXieH_l6BkcBP6XRrog0CQQxuz0lXLp41iFakdn9Mxh2tdyDyPbtXiiMiyG1dnnJr9ZhewGm2Z-zYI6l3oiZa_NaxrWBIYZlO07Zb0cgsNGefpgtAzZIrWpcPqjYTvUY-edGiPQ_eojXtWpKOvRN3J-D95dGBeXNpSK0ozLwr6WGfEIQcWzLE5lo5PiCf1S5sRxGCQQ9EQKxxKR0DcJbkERQXzDe7Z4R5SLkU-97qtM8P9rDO2qzPxfayzfnZoJ3uLzOMY-C9ncFuXsu2I3lkWaf7et48ZcuxCZAFWVLoMBR6xmY9C5EHUzAJKCATQdqCY6xMngBBbwOJCbO0R7kubBsppxh72lnV85qKa2SC0awezfItUUMami2yrrGU08rZ8vWJnFszuXLC_4onM1tUUXavZYytUhIxgj1KqHBeDs3NUSJnnYqY8Ck4x8Dhoq1IOYxy0UXJXSciURBg6VDqB2zyqz_GPBE1GLUF9utbhGSb37KH20NW_kva5Xev1MTKbR1sXjAWO3iV1pMdoiAKHSRfWh_kSEy58DwkXBW4ICqhcQggmQehCYicgHpbMxszeEuWSnaJcvmXB-PYFa8SyV3pjoVqmMtFYlE8aOLSZd0ag3204a-v876LDxO52rn2kAksRYs88hyZ8F7s-pLdSEgbpEPOYbUOeH_okDIkQIEAihGxIUqYo576QzJPrW1k7qXHt2CRhm4cmWw5aNtXX_ndR39XLX9YfR9_6gPY_Xo7iFDCBwpvyPvrnhffh8ly_DbV8Tr7Es5aPxDdQ8FYUa3Qnp6149v14a8cdOgbwA4TwYxEij0WIPhYh9liEnB8h9BgL9hhr9RjL9Bgr9BiL02tdEN1GpJ2HaCvKD2oufizNxY-lufixNBc_lubix9Jc_Fiaix9lwR5jrR5jmR5jhR5jcXqti2il8VrFE1XscNMS4SHL2E4BP5gCeTAF-mAK7MEU2hfPaaVwlAZzq_5y3V73rWE9ZBm3kMGPQ4Y8Dhn6OGTY45DpcKvtC3ymT2XkO9y4RHjIsrZTwA-mQB5MgT6YAnswhfbV4x1CkBb5TkID8A_TyBYC-KEEyEMJ0IcSYA8l0L5qrJVA-aKIdiVtv6U-nNOxTsjtxthlYQxC-0Kg9lT6SMUdk0Cd8P1kD-HeBHaSvRZ88kB8-kB89kD8XQLkM70nuZulNhgdKVe7cJdH_jrWVWxB6bgL34LSvnjuFoz25aJbMNoXCHfFWzJohyedTrwdvl0DwN-3g7dr3Lm6XoIbcXkTQH8bZLl7jR3kQpSQpIEyVM2fuxHgmNUJcMx2IkCIQ9CKQPnnLgQoRfoVkQsC5Z87EXBtYdcImD93IcAYcmsEyj93IeAgimpTKP-s1UkXL9o077fUv96lhTLfcNKtiz9emhdu6kOpd4fBrS77XqVpnC_fwCmnU5WsXg4eqLyIyle3gZjF5QvPXy42-svvSpZfaSqqz0-ZiuyZmpga9qu9JM0my2881_urQ7nGxOhXb4JQSn-un-Ff3ty8kbN8Uwy060dtoO_w_Bx6yqb8aH58MVq8pbPReKofqGp-kax8b3k12sZrxMsTB2uvPI0SP54Br5Pqm4llRdmKpafntWdNZJQcrjhQda-1mtebV105qOZ68al8kepLGLbl6-MpFWg5lPJAI1oMqN6IG4DLMV-Xev9WFTKQhSxl4YVmyosVI82nXkdTMGNjmE65TEay9Ftup8qvPgZrLUBuFiulrZv5npe-R0WvQey2_OhYR_eLp5iseWZkKHNf6i-WLWYr6rMtHytZwmydbpPc5nwb_ZV2vzCS8GSShp5O0soPX8w7-L7s3crxJdQmsxddf1c-6-HAr3fq7jCDAfqLt-S3crsEWdRsOnjepFPjeKPjL8LvJ2D1scqVfpPzypRo9q2YXOu_qfu3BX9r_TXmrlr_vpzVr_54r1-8DflmB3PN20FWMK0MbpKp8bjR8fdl88dZrM8KeOYzWd1CPJVR1i3CZW9TgE3b_ze-oh5crZek_3zGjmaTSZpcmk8Nla_bW3EXNaINA2iVkNYCtMsFbhI1neUJjgWACjpBVvxbb6wYiNYc68YNnyRqey2TwJd5cZiA14mm5deu2qX1QxKr-8PUJdRmFLHoepKJfkg8_QKI1VctO-ZooKwV2D2TXSPaNukmyJNM3rzVOjdvuO5KROoQ2_OQOmRLHlLrfpq5Gs1bfDCldZWrl9ktYLZPt0GuZb71_ieZ8Mc0Ct7KJJrO4m3qq8GsJlyr26kIb1LdnPsGzBO7-3I35s93Sfo1-2n50UFIEVYaVmd_DaaD8Q2IGrPr7U8iYJflk9bLjyEu5sfr8zuvP3e_XbQ06ApyU6wa_S-eIMIolIph0ElXGWPV3246zDvkz2bmA7216dWan2BWhzP9gOUWA1EHaF2-OkA9Y101P7H-VwddniwmTWF501hNOnxsFZCOCp1eVYDbwlEDWMG1BqMdAD8UitZoPYFwlv5z8SXNQ1D-FQ9Zw3VLaIZRmu9ytUppA6I2zXr7E8zwSk2mKi8Wn_5uFZAKxloAtQvHGqXaFJs9TzDJj1EhG_luwwWuelsXbtVdm9Ky8a9RScBPU92V-gnb8tGPDr0oQRaPh2z3v3VyrTlLE-ApPLCR4PKtLx0TLkGsBUz7fBtk6vOsdzzB_E6zNC88_X2ADl9cB2idWh2gNrFa8xMrTHWs7c_n7aWMcvWb3o3sSv8MhLUAaWVvg0jD95qeoKVrR69bv8MT5sn6MaWukkCZJZcQPXLkErArQza9TzNRJdfd7lo5AAA2fW7rFqxsc7ubvS-eSOzLLz9vl_slTLfgL0HW5XXRsWFbqp-LkxHlsQX98ypTanF8wQyi-sq4_sOSua-SYBjLPK8eGPMbv82LJfTHSU_12Ybio_68j9ZBrO2P7puXr_cC5fqDIuLuE0EZ_df-H5jZCO0TJDCGvwhlDO9TxKjuowh-7VPuUN1HMXfxvmtz00UcyvcZR9yFvxxKbWefCo7tf5WnQbQSY5vsI8d29_UnROEWDt8njMAvAN83gwAqHC4uUMLQwbDrAE1K9h0s3H2HIwwXh-5zQhhcOPxyhNh3iXD2XWazff21CgRX16b7CNnQhxDF9j4iNtwXUZtxuDp6INQl0M5s6uirACyGEPQyqulwDndAgmgsoAy9rgMtGDhA9jG2HbyPiY05XJGAdiow3S95h2FO0MtcGLI5hgRXzG19dQVc9SzM6SK4Cgd6OdwBrpo9mBMbYLij6ehPXMIVeLRPbCJsvSqc7QN1AZwjBEGLPmS0T6gNlAlFXP_WK0ao0PDURZrHGPhAHEah3XFhBeFKYcU5wQ5cmQO_XYHEfrW-iHJYc-w40GLWmBIEq1EuMVxhXuZsElyxDb36nJG-6rUTwHu46hFSQYBLIAQIWvRRJLhiRveB5RjDVUAvIwjuywjcBq4Oh4WHIcBvuL3-TbVQ6VNIcGUOSARzYL3gyuHq2MANxjEIBBNY03FdLPZhdV191bNwbAZ3BEAX7ZvDSPoKXHIwxfAbOAkwhGOQMIqBn6XgOpTB-B0GAqSvwH8HmOSYq27hICH66uxVT7DKbH7YVEgwDKDtaql35Mvi-d2XHy7PSxs3Lopp_tOLF3d3dwdTWYzTUH2LYnXgp5MX0_I9I8-NdXmuSb04hP-Ort8eB9ej70dfv55__vVbeOzb7y-ODrOTX8Xl-eXlt9Pzw0_et-jy7Pdr6R3Nk9dvqRoORzc_j06S8_nN51_QYZ4cn1--m31lw-_T0fv8s-Nc5e8uhuj00lanV0P0Nkfv448R-02gm8vPF-Nxjs_t3z5_nHw8k-q3bJp-OhvH8uLnm_d4eixvvmWYnM39mxhnr-fH19dq-Dp9F46vfjlV1KPRyfDNb5-Tz79nzq9v2dHHr74zuvtt9kvqq-jwF5lP51EayumXm5tJHsn5TYbnt1N-W9z-_Fw4Gbu45b8f_pZf4W83_CIsDkNbkqvf3QuOmPfb0I0V_p_v3tB9fkdxdnP2_nbGj3_Po9mXTBx9-U5Cf_78_a1j384-fTm5ff7xwjk6OhxeH_7y5vDm1-HNEfuMT4aFuJqcfU-_RmfPz1OZ-v7v_o2fEjS7CTn79Tn7_Kq014tVq87B5ZWbqo6yLg8zuu1HEDcBeftRw01A0X6kcAOQ2O1HBzcpOu1HBDcBWftRwE1A2nrkT3uzGrNe6hpFFoEvqA4EakdmfJ72dAuP9zFSd6BV-hW-oyLTUfSWb15_T9PFGT5S_vU_RvX0r8_6F9zp5YsL0K334dEsivU7TP85-H8r-xPb';
+const statNames={Life:'Здоровье',Mana:'Мана',EnergyShield:'Энергетический щит',Armour:'Броня',Evasion:'Уклонение',EffectiveBlockChance:'Шанс блока атак',EffectiveSpellBlockChance:'Шанс блока чар'};
+const slotNames={'Weapon 1':'Оружие','Weapon 2':'Щит / второе оружие','Helmet':'Шлем','Body Armour':'Нагрудник','Gloves':'Перчатки','Boots':'Ботинки','Amulet':'Амулет','Ring 1':'Кольцо 1','Ring 2':'Кольцо 2','Belt':'Пояс'};
+const icons={'Weapon 1':'⚔','Weapon 2':'◈','Helmet':'♜','Body Armour':'▣','Gloves':'♧','Boots':'⌁','Amulet':'◇','Ring 1':'○','Ring 2':'○','Belt':'▰'};
+function val(map,key){return map[key]??'—'}
+function fmt(x){if(x===undefined||x===null||x==='')return '—';let n=Number(x);return Number.isFinite(n)?Math.round(n).toLocaleString('ru-RU'):x}
+function decodeB64(s){s=s.trim().replace(/\s/g,'').replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';let bin=atob(s),a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a}
+async function parseCode(code){
+ let bytes=decodeB64(code);
+ if(typeof DecompressionStream==='undefined')throw Error('Браузер не поддерживает распаковку PoB-кода. Откройте файл в современном Safari или Chrome.');
+ let stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate'));
+ return new DOMParser().parseFromString(await new Response(stream).text(),'application/xml');
+}
+function itemText(node){return (node?.textContent||'').trim()}
+function render(doc){
+ const build=doc.querySelector('Build');if(!build)throw Error('В файле не найден раздел Build.');
+ const stats={};doc.querySelectorAll('PlayerStat').forEach(n=>stats[n.getAttribute('stat')]=n.getAttribute('value'));
+ ['Str','Dex','Int'].forEach(k=>document.getElementById(k).textContent=fmt(stats[k]));
+ document.getElementById('charInfo').textContent=` · ${build.getAttribute('className')||''} / ${build.getAttribute('ascendClassName')||''} · Уровень ${build.getAttribute('level')||'—'}`;
+ document.getElementById('defenses').innerHTML=Object.entries(statNames).map(([k,n])=>`<div class="stat"><label>${n}</label><b>${fmt(stats[k])}${k.includes('Chance')?'%':''}</b></div>`).join('');
+ const items={};doc.querySelectorAll('Items > Item').forEach(n=>items[n.getAttribute('id')]=itemText(n));
+ const slots={};doc.querySelectorAll('ItemSet').forEach((set,i)=>{if(i===0)set.querySelectorAll(':scope > Slot').forEach(s=>slots[s.getAttribute('name')]=s.getAttribute('itemId'))});
+ let order=['Helmet','Amulet','Body Armour','Gloves','Boots','Weapon 1','Weapon 2','Ring 1','Ring 2','Belt'];
+ document.getElementById('gear').innerHTML=order.map(k=>{
+  let id=slots[k],txt=items[id],name='Пусто',rarity='normal';
+  if(txt){let lines=txt.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);name=lines.find(x=>/^Rarity:/.test(x))?.replace(/^Rarity:\s*\w+\s*/,'')||lines[1]||'Предмет';let r=txt.match(/Rarity:\s*(\w+)/);rarity=(r?.[1]||'normal').toLowerCase()}
+  let safe=txt?txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'):'Слот пуст';
+  return `<div class="item" tabindex="0"><div class="glyph">${icons[k]||'◇'}</div><div class="slot">${slotNames[k]}</div><div class="iname rarity-${rarity}">${name}</div><div class="tooltip">${safe}</div></div>`
+ }).join('');
+ const rs=[['FireResist','Огонь','fire'],['ColdResist','Холод','cold'],['LightningResist','Молния','light'],['ChaosResist','Хаос','chaos']];
+ document.getElementById('resists').innerHTML=rs.map(([k,n,c])=>{let v=Number(stats[k]||0);return `<div class="resrow"><b>${n}</b><div class="bar"><div class="fill ${c}" style="width:${Math.max(0,Math.min(100,v))}%"></div></div><div class="resval">${fmt(stats[k])}%</div></div>`}).join('');
+}
+const picker=document.getElementById('file');
+
+
+
+
+window.clearBuildView = function(){
+ const dash='—';
+ ['Str','Dex','Int'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=dash;});
+ const info=document.getElementById('charInfo'); if(info)info.textContent='';
+ const defs=document.getElementById('defenses');
+ if(defs) defs.innerHTML=Object.values(statNames).map(n=>'<div class="stat"><label>'+n+'</label><b>'+dash+'</b></div>').join('');
+ const gear=document.getElementById('gear');
+ if(gear) gear.innerHTML=Object.entries(slotNames).map(([k,n])=>'<div class="item"><div class="glyph">'+(icons[k]||'◇')+'</div><div class="slot">'+n+'</div><div class="iname">Не загружено</div></div>').join('');
+ const res=document.getElementById('resists');
+ if(res) res.innerHTML=['Огонь','Холод','Молния','Хаос'].map(n=>'<div class="resrow"><b>'+n+'</b><div class="bar"></div><div class="resval">'+dash+'</div></div>').join('');
+ const fileInput=document.getElementById('file'); if(fileInput)fileInput.value='';
+ const status=document.getElementById('status'); if(status)status.textContent='Данные очищены — выбери PoB-файл';
+ return false;
+};
+document.getElementById('clearBuild').addEventListener('click', function(event){
+ event.preventDefault();
+ window.clearBuildView();
+});
+
+picker.addEventListener('change',async e=>{
+ let f=e.target.files && e.target.files[0];
+ if(!f){document.getElementById('status').textContent='Файл не выбран';return}
+ const status=document.getElementById('status');
+ status.textContent='Читаю '+f.name+'…';
+ try{
+  const t=await new Promise((resolve,reject)=>{
+   const reader=new FileReader();
+   reader.onload=()=>resolve(String(reader.result||''));
+   reader.onerror=()=>reject(new Error('Не удалось прочитать выбранный файл'));
+   reader.readAsText(f);
+  });
+  let doc;
+  if(t.trim().startsWith('<')) doc=new DOMParser().parseFromString(t,'application/xml');
+  else doc=await parseCode(t);
+  if(doc.querySelector('parsererror')) throw new Error('XML повреждён или имеет неверный формат');
+  render(doc);
+  status.textContent='Загружен: '+f.name;
+ }catch(err){
+  status.textContent='Ошибка: '+err.message;
+  alert('Не удалось прочитать PoB-файл. '+err.message);
+ }
+});
+(async()=>{try{render(await parseCode(initialCode))}catch(e){document.getElementById('status').textContent='Загрузите PoB-файл'}})();
+</script></body></html>
