@@ -610,20 +610,22 @@ function positionItemMenu(menu,card){
 }
 function gearSlotMatches(slot,txt){
  const lines=(txt||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
- const hasRarity=/^Rarity:\s*/i.test(lines[0]||'');
+ // PoE item text can be exported in English or in the game's localized language.
+ // Prefer the base-type line; tolerate both Rarity-prefixed and plain item text.
+ const hasRarity=/^(?:Rarity|Редкость):\s*/i.test(lines[0]||'');
  const base=(lines[hasRarity?2:1]||'').toLowerCase();
  const has=r=>r.test(base);
  const rules={
-  'Helmet':/helmet|tricorne|bascinet|burgonet|circlet|crown|hood|mask|cap|helm|bone helmet|great helmet|raven mask|close helmet/,
-  'Amulet':/amulet|talisman/,
-  'Body Armour':/robe|vest|tunic|coat|plate|hauberk|regalia|carapace|brigandine|garb|raiment|doublet|jacket|assassin.s garb|body armour/,
-  'Gloves':/gloves|gauntlets|mitts|grips/,
-  'Boots':/boots|slippers|shoes|greaves|sabatons/,
-  'Weapon 1':/wand|staff|sceptre|scepter|sword|axe|mace|dagger|claw|bow|quarterstaff|foil|blade|maul|flail|rapier|rod|gavel|fleshripper|convoking wand/,
-  'Weapon 2':/shield|buckler|spirit shield|kite shield|tower shield|round shield|crest shield/,
-  'Ring 1':/ring/,
-  'Ring 2':/ring/,
-  'Belt':/belt|sash|stygian vise/
+  'Helmet':/helmet|tricorne|bascinet|burgonet|circlet|crown|hood|mask|cap|helm|bone helmet|great helmet|raven mask|close helmet|шлем|обруч|венец|корона|маска|капюшон|костяной шлем/,
+  'Amulet':/amulet|talisman|амулет|талисман/,
+  'Body Armour':/robe|vest|tunic|coat|plate|hauberk|regalia|carapace|brigandine|garb|raiment|doublet|jacket|assassin.s garb|body armour|доспех|броня|одеяние|мантия|кираса|панцирь|нагрудник/,
+  'Gloves':/gloves|gauntlets|mitts|grips|перчатки|рукавицы|боевые рукавицы/,
+  'Boots':/boots|slippers|shoes|greaves|sabatons|сапоги|ботинки|поножи/,
+  'Weapon 1':/wand|staff|sceptre|scepter|sword|axe|mace|dagger|claw|bow|quarterstaff|foil|blade|maul|flail|rapier|rod|gavel|fleshripper|convoking wand|жезл|посох|скипетр|меч|топор|булава|кинжал|коготь|лук|боевой посох/,
+  'Weapon 2':/shield|buckler|spirit shield|kite shield|tower shield|round shield|crest shield|щит|баклер|духовный щит/,
+  'Ring 1':/ring|кольцо/,
+  'Ring 2':/ring|кольцо/,
+  'Belt':/belt|sash|stygian vise|пояс|ремень|опоясание/
  };
  return !!(rules[slot]&&has(rules[slot]));
 }
