@@ -830,7 +830,7 @@ picker.addEventListener('change',async e=>{
  function translate(str){let out=str;for(const [a,b] of pairs)out=out.split(a).join(b);return out}
  function walk(root){
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
-  let n;while((n=w.nextNode())){if(!textNodes.has(n))textNodes.set(n,n.nodeValue);n.nodeValue=window.appLanguage==='en'?translate(textNodes.get(n)):textNodes.get(n)}
+  let n;while((n=w.nextNode())){if(!textNodes.has(n))textNodes.set(n,n.nodeValue);const next=window.appLanguage==='en'?translate(textNodes.get(n)):textNodes.get(n);if(n.nodeValue!==next)n.nodeValue=next}
   root.querySelectorAll?.('*').forEach(el=>{for(const a of ['placeholder','title','aria-label'])if(el.hasAttribute(a)){let key=el.tagName+'|'+a;if(!attrValues.has(el))attrValues.set(el,{});const bag=attrValues.get(el);if(!(a in bag))bag[a]=el.getAttribute(a);el.setAttribute(a,window.appLanguage==='en'?translate(bag[a]):bag[a])}});
  }
  const faq={
@@ -870,7 +870,7 @@ picker.addEventListener('change',async e=>{
  document.getElementById('openFaq').addEventListener('click',()=>{setLang(window.appLanguage);faqModal.classList.add('open');faqModal.setAttribute('aria-hidden','false')});
  document.getElementById('closeFaq').addEventListener('click',()=>{faqModal.classList.remove('open');faqModal.setAttribute('aria-hidden','true')});
  faqModal.addEventListener('click',e=>{if(e.target===faqModal){faqModal.classList.remove('open');faqModal.setAttribute('aria-hidden','true')}});
- const observer=new MutationObserver(records=>{for(const rec of records){if(rec.type==='childList')rec.addedNodes.forEach(n=>{if(n.nodeType===Node.TEXT_NODE){if(!textNodes.has(n))textNodes.set(n,n.nodeValue);n.nodeValue=window.appLanguage==='en'?translate(textNodes.get(n)):textNodes.get(n)}else if(n.nodeType===Node.ELEMENT_NODE)walk(n)});else if(rec.type==='characterData'){if(!textNodes.has(rec.target))textNodes.set(rec.target,rec.target.nodeValue);rec.target.nodeValue=window.appLanguage==='en'?translate(textNodes.get(rec.target)):textNodes.get(rec.target)}}});
+ const observer=new MutationObserver(records=>{for(const rec of records){if(rec.type==='childList')rec.addedNodes.forEach(n=>{if(n.nodeType===Node.TEXT_NODE){if(!textNodes.has(n))textNodes.set(n,n.nodeValue);const next=window.appLanguage==='en'?translate(textNodes.get(n)):textNodes.get(n);if(n.nodeValue!==next)n.nodeValue=next}else if(n.nodeType===Node.ELEMENT_NODE)walk(n)});else if(rec.type==='characterData'){if(!textNodes.has(rec.target))textNodes.set(rec.target,rec.target.nodeValue);const next=window.appLanguage==='en'?translate(textNodes.get(rec.target)):textNodes.get(rec.target);if(rec.target.nodeValue!==next)rec.target.nodeValue=next}}});
  observer.observe(document.body,{subtree:true,childList:true,characterData:true});
  setLang('ru');
 })();
