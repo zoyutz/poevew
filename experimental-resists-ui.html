@@ -922,7 +922,7 @@ picker.addEventListener('change',async e=>{
  </div>`
  };
  function setLang(lang){
-  window.appLanguage=lang;document.documentElement.lang=lang;
+  window.appLanguage=lang;document.documentElement.lang=lang;document.title=lang==='en'?'Exile — Character Viewer · resistance planner':'Exile — Character Viewer · планировщик сопротивлений';
   document.getElementById('langRu').classList.toggle('lang-active',lang==='ru');
   document.getElementById('langEn').classList.toggle('lang-active',lang==='en');
   walk(document.body);
